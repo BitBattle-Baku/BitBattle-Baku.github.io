@@ -13,10 +13,9 @@
         :root { --bg: #02050a; --panel: rgba(11, 17, 29, 0.85); --neon-blue: #00f2ff; --neon-pink: #ff00ff; --neon-green: #39ff14; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* Arxa fon şəkli üçün düzəlişlər */
         body { 
             background: #000 url('https://r.resimlink.com/5S9vXzO.png') no-repeat center center fixed; 
-            background-size: cover; /* Şəkli ekranı tam örtməyə məcbur edir */
+            background-size: cover;
             min-height: 100vh; 
             display: flex; 
             justify-content: center; 
@@ -26,13 +25,24 @@
             overflow-x: hidden; 
             padding: 20px; 
         }
-        
-        /* Panellər üçün şüşə effekti */
+
+        /* Animasiyalar */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 242, 255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(0, 242, 255, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 242, 255, 0); } }
+
+        .card { 
+            background: var(--panel); 
+            backdrop-filter: blur(12px);
+            padding: 40px; border-radius: 30px; border: 2px solid var(--neon-blue); 
+            width: 100%; max-width: 420px; text-align: center; 
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); position: relative; z-index: 5;
+            animation: fadeIn 0.5s ease-out;
+        }
+
         .side-leaderboard { 
             position: fixed; right: 20px; top: 50%; transform: translateY(-50%); 
             width: 280px; background: rgba(11, 17, 29, 0.9); 
-            backdrop-filter: blur(8px); /* Arxanı bulanıq edir */
-            border: 2px solid var(--neon-pink); padding: 15px; border-radius: 15px; 
+            backdrop-filter: blur(8px); border: 2px solid var(--neon-pink); padding: 15px; border-radius: 15px; 
             max-height: 90vh; display: flex; flex-direction: column; z-index: 10; 
             box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); 
         }
@@ -49,23 +59,17 @@
         .chat-input-area input { margin-bottom: 0 !important; padding: 8px !important; font-size: 0.75rem !important; background: rgba(0,0,0,0.4) !important; border: 1px solid #333 !important; }
         .chat-send { background: var(--neon-blue); color: black; border: none; padding: 0 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        .card { 
-            background: var(--panel); 
-            backdrop-filter: blur(12px);
-            padding: 40px; border-radius: 30px; border: 2px solid var(--neon-blue); 
-            width: 100%; max-width: 420px; text-align: center; 
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); position: relative; z-index: 5; 
-        }
-
         h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-bottom: 25px; text-shadow: 0 0 10px var(--neon-blue); }
         .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 10px; background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)); color: white; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
+        .pulse-btn { animation: pulse 2s infinite; }
         .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; }
         input { width: 100%; padding: 12px; background: rgba(21, 28, 44, 0.6); border: 1px solid var(--neon-blue); color: white; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; }
         .hidden { display: none !important; }
         .id-display { color: var(--neon-green); font-weight: bold; font-family: monospace; border: 1px dashed var(--neon-green); padding: 5px 15px; margin: 10px 0; display: inline-block; }
-        .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: rgba(26, 36, 58, 0.7); border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; text-align: left; }
-        .footer-trigger { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--neon-blue); cursor: pointer; opacity: 0.4; }
+        .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: rgba(26, 36, 58, 0.7); border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+        .opt-btn:hover { background: rgba(0, 242, 255, 0.2); }
+        .rank-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-left: 5px; vertical-align: middle; }
 
         @media (max-width: 850px) {
             body { flex-direction: column; overflow-y: auto; justify-content: flex-start; padding-top: 20px; background-attachment: scroll; }
@@ -91,7 +95,7 @@
     </div>
 
     <div class="card hidden" id="scr-dash">
-        <p style="font-size: 0.75rem;">Giriş ID-niz:</p>
+        <p style="font-size: 0.75rem;">Status: <span id="u-rank" class="rank-tag">Pilot</span></p>
         <div class="id-display" id="u-id">...</div>
         <h2 id="u-welcome" style="margin: 10px 0; font-family:'Orbitron';">Pilot</h2>
         <div style="display: flex; justify-content: space-around; margin: 20px 0; border-top: 1px solid #222; padding-top: 15px;">
@@ -137,7 +141,12 @@
     <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
 
     <script>
-        // Sənin Firebase config-in
+        // Səslər
+        const sfx = {
+            correct: new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'),
+            wrong: new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3')
+        };
+
         const firebaseConfig = {
             apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
             authDomain: "bitbattle-64c13.firebaseapp.com",
@@ -152,7 +161,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Suallar və oyun funksiyaları
+        // Suallar (Mövcud siyahın)
         const questions = [
             { q: "Hansı tərəzi ilə çəki çəkmək olmaz?", o: ["Mətbəx", "Bürclər", "Elektron", "Mexaniki"], c: 1 },
             { q: "Mən danışmıram, amma hər şeyə cavab verirəm. Nəyəm?", o: ["Güzgü", "Kitab", "Əks-səda", "Külək"], c: 2 },
@@ -235,6 +244,13 @@
         let adminClicks = 0;
         let gameTimer;
 
+        // Rütbə Təyini
+        function getRank(bits) {
+            if(bits >= 5000) return { name: "Əfsanə", color: "#ff0000" };
+            if(bits >= 1000) return { name: "Master", color: "#ffcc00" };
+            return { name: "Pilot", color: "#00f2ff" };
+        }
+
         function sendMsg() {
             const inp = document.getElementById('chat-input');
             const txt = inp.value.trim();
@@ -250,7 +266,7 @@
         }
 
         function listenChat() {
-            db.ref('chat').limitToLast(10).on('value', snap => {
+            db.ref('chat').limitToLast(12).on('value', snap => {
                 const box = document.getElementById('chat-messages');
                 box.innerHTML = "";
                 snap.forEach(c => {
@@ -278,7 +294,7 @@
             let name = document.getElementById('reg-name').value;
             if(name.length < 3) return alert("Ad qısadır!");
             let id = "BIT-" + Math.floor(1000 + Math.random() * 9000);
-            let newUser = { id, name, bits: 0, limit: 2, isVIP: false };
+            let newUser = { id, name, bits: 0, limit: 2, isVIP: false, lastLogin: Date.now() };
             db.ref('users/' + id).set(newUser).then(() => loginWithUser(newUser));
         }
 
@@ -290,6 +306,17 @@
         function loginWithUser(user) {
             currentUser = user;
             localStorage.setItem('bb_user_id', user.id);
+            
+            // Gündəlik Bonus
+            const today = new Date().toDateString();
+            const lastDate = user.lastBonusDate || "";
+            if(today !== lastDate) {
+                currentUser.limit += 2;
+                currentUser.lastBonusDate = today;
+                saveToDB();
+                alert("Gündəlik +2 Limit Bonus Qazandınız!");
+            }
+
             updateDash();
             show('scr-dash');
             startLeaderboardSync();
@@ -298,14 +325,21 @@
 
         function updateDash() {
             if(!currentUser) return;
+            const rank = getRank(currentUser.bits);
             document.getElementById('u-id').innerText = currentUser.id;
             document.getElementById('u-welcome').innerText = currentUser.name;
             document.getElementById('u-bits').innerText = currentUser.bits;
             document.getElementById('u-limit').innerText = currentUser.isVIP ? "∞" : currentUser.limit + "/2";
+            
+            const rTag = document.getElementById('u-rank');
+            rTag.innerText = rank.name;
+            rTag.style.background = rank.color;
+            rTag.style.color = "black";
+
             let container = document.getElementById('btn-container');
             container.innerHTML = (!currentUser.isVIP && currentUser.limit <= 0) ? 
-                `<button class="btn btn-wa" onclick="contactAdmin()">LİMİTSİZ AL</button>` : 
-                `<button class="btn" onclick="startGame()">DÖYÜŞƏ BAŞLA</button>`;
+                `<button class="btn btn-wa pulse-btn" onclick="contactAdmin()">LİMİTSİZ AL</button>` : 
+                `<button class="btn pulse-btn" onclick="startGame()">DÖYÜŞƏ BAŞLA</button>`;
         }
 
         function startLeaderboardSync() {
@@ -314,7 +348,11 @@
                 list.reverse();
                 let html = "";
                 list.forEach((u, i) => {
-                    html += `<div class="leader-item"><span>${i+1}. ${u.name}${u.isVIP ? '<span class="vip-tag">VIP</span>' : ''}</span><span style="color:var(--neon-blue)">${u.bits}</span></div>`;
+                    const rank = getRank(u.bits);
+                    html += `<div class="leader-item">
+                        <span>${i+1}. ${u.name} <small style="color:${rank.color}">[${rank.name}]</small>${u.isVIP ? '<span class="vip-tag">VIP</span>' : ''}</span>
+                        <span style="color:var(--neon-blue)">${u.bits}</span>
+                    </div>`;
                 });
                 document.getElementById('leader-list').innerHTML = html;
             });
@@ -329,21 +367,41 @@
             clearInterval(gameTimer);
             let time = 10;
             document.getElementById('timer').innerText = time;
+            document.getElementById('timer').style.color = "var(--neon-green)";
+            
             let q = questions[Math.floor(Math.random()*questions.length)];
             document.getElementById('q-text').innerText = q.q;
             let opts = document.getElementById('q-opts');
             opts.innerHTML = "";
+            
             q.o.forEach((o, i) => {
                 let b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
                 b.onclick = () => {
-                    if(i === q.c) { currentUser.bits += 50; saveToDB(); loadQuestion(); }
-                    else { alert("YALNIŞ!"); show('scr-dash'); updateDash(); }
+                    if(i === q.c) { 
+                        sfx.correct.play();
+                        currentUser.bits += 50; 
+                        saveToDB(); 
+                        loadQuestion(); 
+                    } else { 
+                        sfx.wrong.play();
+                        alert("YALNIŞ!"); 
+                        show('scr-dash'); 
+                        updateDash(); 
+                    }
                 };
                 opts.appendChild(b);
             });
+            
             gameTimer = setInterval(() => {
-                time--; document.getElementById('timer').innerText = time;
-                if(time <= 0) { clearInterval(gameTimer); show('scr-dash'); updateDash(); }
+                time--; 
+                document.getElementById('timer').innerText = time;
+                if(time <= 3) document.getElementById('timer').style.color = "red";
+                if(time <= 0) { 
+                    sfx.wrong.play();
+                    clearInterval(gameTimer); 
+                    show('scr-dash'); 
+                    updateDash(); 
+                }
             }, 1000);
         }
 
