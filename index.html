@@ -210,12 +210,13 @@
             const txt = inp.value.trim();
             if(txt && currentUser) {
                 db.ref('chat').push({ u: currentUser.name, t: txt, v: currentUser.isVIP, ts: Date.now() });
-                // Yazı qutusu boşalmasın deyə inp.value = ""; silindi
+                inp.value = ""; // Mesaj gedəndə qutu təmizlənsin
             }
         }
 
         function listenChat() {
-            db.ref('chat').limitToLast(20).on('value', snap => {
+            // limitToLast(10) edildi - yalnız son 10 mesaj görünəcək
+            db.ref('chat').limitToLast(10).on('value', snap => {
                 const box = document.getElementById('chat-messages');
                 box.innerHTML = "";
                 snap.forEach(c => {
