@@ -10,12 +10,33 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;500;800&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #02050a; --panel: #0b111d; --neon-blue: #00f2ff; --neon-pink: #ff00ff; --neon-green: #39ff14; }
+        :root { --bg: #02050a; --panel: rgba(11, 17, 29, 0.85); --neon-blue: #00f2ff; --neon-pink: #ff00ff; --neon-green: #39ff14; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        body { background: var(--bg); min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Poppins', sans-serif; color: white; overflow-x: hidden; padding: 20px; }
+        /* Arxa plana sənin göndərdiyin şəkil əlavə olundu */
+        body { 
+            background: url('https://r.resimlink.com/5S9vXzO.png') no-repeat center center fixed; 
+            background-size: cover;
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-family: 'Poppins', sans-serif; 
+            color: white; 
+            overflow-x: hidden; 
+            padding: 20px; 
+        }
         
-        .side-leaderboard { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); width: 280px; background: rgba(11, 17, 29, 0.95); border: 2px solid var(--neon-pink); padding: 15px; border-radius: 15px; max-height: 90vh; display: flex; flex-direction: column; z-index: 10; box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); }
+        /* Leaderboard üçün şəffaflıq və bulanıqlıq (blur) effekti */
+        .side-leaderboard { 
+            position: fixed; right: 20px; top: 50%; transform: translateY(-50%); 
+            width: 280px; background: rgba(11, 17, 29, 0.9); 
+            backdrop-filter: blur(10px); 
+            border: 2px solid var(--neon-pink); padding: 15px; border-radius: 15px; 
+            max-height: 90vh; display: flex; flex-direction: column; z-index: 10; 
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); 
+        }
+
         .leader-list { overflow-y: auto; flex-grow: 1; max-height: 180px; margin-bottom: 10px; }
         .leader-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
         .vip-tag { color: var(--neon-green); font-weight: bold; font-size: 0.6rem; margin-left: 5px; border: 1px solid; padding: 1px 3px; border-radius: 3px; }
@@ -25,18 +46,26 @@
         .chat-msg { margin-bottom: 5px; line-height: 1.2; }
         .chat-user { font-weight: bold; color: var(--neon-blue); }
         .chat-input-area { display: flex; gap: 5px; }
-        .chat-input-area input { margin-bottom: 0 !important; padding: 8px !important; font-size: 0.75rem !important; background: #000 !important; border: 1px solid #333 !important; }
+        .chat-input-area input { margin-bottom: 0 !important; padding: 8px !important; font-size: 0.75rem !important; background: rgba(0,0,0,0.5) !important; border: 1px solid #333 !important; }
         .chat-send { background: var(--neon-blue); color: black; border: none; padding: 0 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        .card { background: var(--panel); padding: 40px; border-radius: 30px; border: 2px solid var(--neon-blue); width: 100%; max-width: 420px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); position: relative; z-index: 5; }
+        /* Oyun kartları üçün "Modern Glass" effekti */
+        .card { 
+            background: var(--panel); 
+            backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 30px; border: 2px solid var(--neon-blue); 
+            width: 100%; max-width: 420px; text-align: center; 
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.15); position: relative; z-index: 5; 
+        }
+
         h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-bottom: 25px; text-shadow: 0 0 10px var(--neon-blue); }
         .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 10px; background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)); color: white; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
         .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; }
-        input { width: 100%; padding: 12px; background: #151c2c; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; }
+        input { width: 100%; padding: 12px; background: rgba(21, 28, 44, 0.7); border: 1px solid var(--neon-blue); color: white; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; }
         .hidden { display: none !important; }
         .id-display { color: var(--neon-green); font-weight: bold; font-family: monospace; border: 1px dashed var(--neon-green); padding: 5px 15px; margin: 10px 0; display: inline-block; }
-        .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: #1a243a; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; text-align: left; }
+        .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: rgba(26, 36, 58, 0.8); border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; text-align: left; }
         .footer-trigger { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--neon-blue); cursor: pointer; opacity: 0.4; }
 
         @media (max-width: 850px) {
@@ -47,7 +76,6 @@
     </style>
 </head>
 <body>
-
     <div class="card" id="scr-auth">
         <h1>BIT BATTLE</h1>
         <div id="auth-reg">
@@ -109,6 +137,7 @@
     <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
 
     <script>
+        // Sənin Firebase və Oyun məntiqi kodların bura daxildir (dəyişdirilməyib)
         const firebaseConfig = {
             apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
             authDomain: "bitbattle-64c13.firebaseapp.com",
@@ -123,7 +152,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // [Suallar siyahısı eyni qaldı...]
         const questions = [
             { q: "Hansı tərəzi ilə çəki çəkmək olmaz?", o: ["Mətbəx", "Bürclər", "Elektron", "Mexaniki"], c: 1 },
             { q: "Mən danışmıram, amma hər şeyə cavab verirəm. Nəyəm?", o: ["Güzgü", "Kitab", "Əks-səda", "Külək"], c: 2 },
@@ -206,7 +234,6 @@
         let adminClicks = 0;
         let gameTimer;
 
-        // Mesaj göndərmə funksiyası - Düzəldildi
         function sendMsg() {
             const inp = document.getElementById('chat-input');
             const txt = inp.value.trim();
@@ -221,13 +248,10 @@
             }
         }
 
-        // Çatı dinləmə funksiyası - ARTIQ SİLMİR, SÖZ VERİRƏM!
         function listenChat() {
-            // Firebase-dən yalnız son 10 mesajı oxuyur (amma köhnələri silmir)
             db.ref('chat').limitToLast(10).on('value', snap => {
                 const box = document.getElementById('chat-messages');
                 box.innerHTML = "";
-                
                 snap.forEach(c => {
                     const m = c.val();
                     const d = document.createElement('div');
