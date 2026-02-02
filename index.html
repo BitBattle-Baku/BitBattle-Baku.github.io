@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitBattle | Secure Edition</title>
+    <title>BitBattle | Global Arena</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -13,87 +13,35 @@
         :root { --bg: #02050a; --panel: #0b111d; --neon-blue: #00f2ff; --neon-pink: #ff00ff; --neon-green: #39ff14; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        body { 
-            background: var(--bg); 
-            min-height: 100vh; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            font-family: 'Poppins', sans-serif; 
-            color: white; 
-            overflow-x: hidden; 
-            padding: 20px;
-        }
+        body { background: var(--bg); min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Poppins', sans-serif; color: white; overflow-x: hidden; padding: 20px; }
         
-        /* Liderlik Cədvəli - Desktop üçün sağda, mobil üçün aşağıda */
-        .side-leaderboard { 
-            position: fixed; 
-            right: 20px; 
-            top: 50%; 
-            transform: translateY(-50%); 
-            width: 260px; 
-            background: rgba(11, 17, 29, 0.95); 
-            border: 2px solid var(--neon-pink); 
-            padding: 20px; 
-            border-radius: 15px; 
-            max-height: 80vh; 
-            display: flex; 
-            flex-direction: column; 
-            z-index: 10; 
-            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); 
-        }
-
-        .leader-list { overflow-y: auto; flex-grow: 1; }
+        .side-leaderboard { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); width: 280px; background: rgba(11, 17, 29, 0.95); border: 2px solid var(--neon-pink); padding: 15px; border-radius: 15px; max-height: 90vh; display: flex; flex-direction: column; z-index: 10; box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); }
+        .leader-list { overflow-y: auto; flex-grow: 1; max-height: 180px; margin-bottom: 10px; }
         .leader-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
         .vip-tag { color: var(--neon-green); font-weight: bold; font-size: 0.6rem; margin-left: 5px; border: 1px solid; padding: 1px 3px; border-radius: 3px; }
 
-        .card { 
-            background: var(--panel); 
-            padding: 40px; 
-            border-radius: 30px; 
-            border: 2px solid var(--neon-blue); 
-            width: 100%;
-            max-width: 420px; 
-            text-align: center; 
-            box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); 
-            position: relative; 
-            z-index: 5;
-        }
+        .chat-container { border-top: 2px solid var(--neon-blue); padding-top: 10px; display: flex; flex-direction: column; height: 250px; }
+        #chat-messages { flex-grow: 1; overflow-y: auto; font-size: 0.75rem; margin-bottom: 10px; padding-right: 5px; text-align: left; }
+        .chat-msg { margin-bottom: 5px; line-height: 1.2; }
+        .chat-user { font-weight: bold; color: var(--neon-blue); }
+        .chat-input-area { display: flex; gap: 5px; }
+        .chat-input-area input { margin-bottom: 0 !important; padding: 8px !important; font-size: 0.75rem !important; background: #000 !important; border: 1px solid #333 !important; }
+        .chat-send { background: var(--neon-blue); color: black; border: none; padding: 0 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
+        .card { background: var(--panel); padding: 40px; border-radius: 30px; border: 2px solid var(--neon-blue); width: 100%; max-width: 420px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); position: relative; z-index: 5; }
         h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-bottom: 25px; text-shadow: 0 0 10px var(--neon-blue); }
-        
         .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 10px; background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)); color: white; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
-        .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; border: none !important; }
-        
+        .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; }
         input { width: 100%; padding: 12px; background: #151c2c; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; }
         .hidden { display: none !important; }
         .id-display { color: var(--neon-green); font-weight: bold; font-family: monospace; border: 1px dashed var(--neon-green); padding: 5px 15px; margin: 10px 0; display: inline-block; }
-        
-        .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: #1a243a; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
-        .opt-btn:hover { background: var(--neon-blue); color: black; }
-        
-        .footer-trigger { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--neon-blue); cursor: pointer; opacity: 0.4; letter-spacing: 2px; }
+        .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: #1a243a; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; text-align: left; }
+        .footer-trigger { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--neon-blue); cursor: pointer; opacity: 0.4; }
 
-        /* MOBİL ÜÇÜN DÜZƏLİŞLƏR */
         @media (max-width: 850px) {
-            body { 
-                flex-direction: column; 
-                overflow-y: auto; 
-                justify-content: flex-start; 
-                padding-top: 40px;
-                padding-bottom: 100px; /* Footer üçün yer */
-            }
-            .side-leaderboard { 
-                position: relative; 
-                right: auto; 
-                top: auto; 
-                transform: none; 
-                width: 100%; 
-                max-width: 420px;
-                margin-top: 20px; 
-                order: 2; /* Kartdan sonra gəlsin */
-            }
+            body { flex-direction: column; overflow-y: auto; justify-content: flex-start; padding-top: 20px; }
+            .side-leaderboard { position: relative; right: auto; top: auto; transform: none; width: 100%; max-width: 420px; margin-top: 20px; order: 2; }
             .card { order: 1; }
         }
     </style>
@@ -105,12 +53,12 @@
         <div id="auth-reg">
             <input type="text" id="reg-name" placeholder="Döyüşçü Adı">
             <button class="btn" onclick="register()">Qeydiyyatdan Keç</button>
-            <p style="font-size: 0.8rem; margin-top: 10px;">ID-niz var? <a href="#" onclick="toggleAuth(true)" style="color: var(--neon-blue);">Giriş edin</a></p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">ID var? <a href="#" onclick="toggleAuth(true)" style="color: var(--neon-blue);">Giriş</a></p>
         </div>
         <div id="auth-login" class="hidden">
             <input type="text" id="login-id" placeholder="Məs: BIT-1234">
             <button class="btn" onclick="login()">Daxil Ol</button>
-            <p style="font-size: 0.8rem; margin-top: 10px;">Yeni istifadəçi? <a href="#" onclick="toggleAuth(false)" style="color: var(--neon-blue);">Qeydiyyat</a></p>
+            <p style="font-size: 0.8rem; margin-top: 10px;"><a href="#" onclick="toggleAuth(false)" style="color: var(--neon-blue);">Qeydiyyat</a></p>
         </div>
     </div>
 
@@ -133,25 +81,34 @@
 
     <div class="card hidden" id="scr-admin">
         <h2 style="color:red; font-family:'Orbitron';">SİSTEM ADMİN</h2>
-        <input type="password" id="admin-pass" placeholder="Təhlükəsizlik Şifrəsi">
+        <p id="admin-count" style="font-size: 0.8rem; color: #aaa; margin-bottom: 10px;">Yüklənir...</p>
+        <input type="password" id="admin-pass" placeholder="Şifrə">
         <button class="btn" onclick="checkAdmin()">Yoxla</button>
         <div id="admin-tools" class="hidden">
             <input type="text" id="target-id" placeholder="İstifadəçi ID">
-            <button class="btn" style="background:green" onclick="makeVIP()">VIP TƏYİN ET</button>
+            <button class="btn" style="background:green" onclick="makeVIP()">VIP ET</button>
             <button onclick="show('scr-dash')" class="btn" style="background:gray">Geri</button>
         </div>
     </div>
 
     <div class="side-leaderboard">
-        <h3 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--neon-pink); text-align: center; margin-bottom: 15px;">GLOBAL TOP 10</h3>
-        <div class="leader-list" id="leader-list">Yüklənir...</div>
-        <button onclick="logout()" style="background:none; border:none; color:#ff4444; cursor:pointer; text-decoration:underline; font-size:0.65rem; margin-top:10px;">Hesabdan Çıx</button>
+        <h3 style="font-family:'Orbitron'; font-size: 0.8rem; color: var(--neon-pink); text-align: center; margin-bottom: 10px;">GLOBAL TOP 10</h3>
+        <div class="leader-list" id="leader-list">...</div>
+        
+        <div class="chat-container">
+            <h4 style="font-size: 0.7rem; color: var(--neon-blue); margin-bottom: 5px;">CANLI ÇAT</h4>
+            <div id="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Yaz...">
+                <button class="chat-send" onclick="sendMsg()">></button>
+            </div>
+        </div>
+        <button onclick="logout()" style="background:none; border:none; color:#ff4444; cursor:pointer; font-size:0.6rem; margin-top:10px;">Çıxış</button>
     </div>
 
     <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
 
     <script>
-        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
             authDomain: "bitbattle-64c13.firebaseapp.com",
@@ -166,6 +123,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // BÜTÜN 75 SUAL (65 Orijinal + 10 Yeni Çətin)
         const questions = [
             { q: "Hansı tərəzi ilə çəki çəkmək olmaz?", o: ["Mətbəx", "Bürclər", "Elektron", "Mexaniki"], c: 1 },
             { q: "Mən danışmıram, amma hər şeyə cavab verirəm. Nəyəm?", o: ["Güzgü", "Kitab", "Əks-səda", "Külək"], c: 2 },
@@ -192,7 +150,7 @@
             { q: "Əqrəblər saat 03:15-də neçə dərəcəlik bucaq əmələ gətirir?", o: ["0", "7.5", "15", "90"], c: 1 },
             { q: "6 nəfər bir-biri ilə əl sıxışırsa, cəmi neçə əl sıxma olar?", o: ["12", "15", "18", "21"], c: 1 },
             { q: "Hər 5 dəqiqədə bir ikiyə bölünən bakteriya, 1 saatda neçə dəfə bölünər?", o: ["6", "10", "12", "60"], c: 2 },
-            { q: "Dünyanın ən hündür zirvəsi hansıdır?", o: ["Qazbek", "Elbrus", "Everest", "Şahdağ"], c: 2 },
+            { q: "Dünyanın ən hündür zirvəsi hansıdır?", o: ["Everest", "Elbrus", "Qazbek", "Şahdağ"], c: 0 },
             { q: "Hansı okeanın sahəsi ən böyükdür?", o: ["Atlantik", "Hind", "Sakit", "Şimal Buzlu"], c: 2 },
             { q: "Azərbaycanın ən uzun çayı hansıdır?", o: ["Araz", "Kür", "Samur", "Tərtər"], c: 1 },
             { q: "Hansı ölkə 'Gündoğan ölkə' adlanır?", o: ["Çin", "Koreya", "Yaponiya", "Vyetnam"], c: 2 },
@@ -231,12 +189,47 @@
             { q: "100-ün 10%-i neçədir?", o: ["1", "5", "10", "20"], c: 2 },
             { q: "Hansı ədəd həm təkdir, həm də cüt?", o: ["0", "1", "2", "Heç biri"], c: 3 },
             { q: "Bir sutka neçə saniyədir?", o: ["3600", "24000", "86400", "60000"], c: 2 },
-            { q: "Kvadratın neçə tərəfi var?", o: ["3", "4", "5", "6"], c: 1 }
+            { q: "Kvadratın neçə tərəfi var?", o: ["3", "4", "5", "6"], c: 1 },
+            /* 10 YENİ ÇƏTİN SUAL */
+            { q: "Hansı rəqəm Roma rəqəmləri sistemində mövcud deyil?", o: ["I", "V", "X", "0"], c: 3 },
+            { q: "Dünyanın ən uzun sahil xəttinə malik ölkəsi hansıdır?", o: ["Rusiya", "Kanada", "Avstraliya", "ABŞ"], c: 1 },
+            { q: "Şahmatda 'En Passant' gedişi hansı fiqura aiddir?", o: ["At", "Piyada", "Fil", "Şah"], c: 1 },
+            { q: "İşıq sürəti təxminən saniyədə neçə kilometrdir?", o: ["150.000", "200.000", "300.000", "400.000"], c: 2 },
+            { q: "İnsan bədənindəki ən kiçik sümük haradadır?", o: ["Burun", "Qulaq", "Barmaq", "Diz"], c: 1 },
+            { q: "Hansı elementin kimyəvi simvolu 'W'-dir?", o: ["Qızıl", "Dəmir", "Volfram", "Gümüş"], c: 2 },
+            { q: "İlk kompüter proqramçısı kim hesab olunur?", o: ["Marie Curie", "Ada Lovelace", "Grace Hopper", "Hedy Lamarr"], c: 1 },
+            { q: "Dünyada ən çox dildə danışılan ölkə hansıdır?", o: ["Hindistan", "Çin", "Papua Yeni Qvineya", "Braziliya"], c: 2 },
+            { q: "Vatikan dövlətinin rəsmi dili hansıdır?", o: ["İtalyan", "Latın", "Fransız", "İspan"], c: 1 },
+            { q: "Günəş sistemində öz oxu ətrafında ən sürətli fırlanan planet?", o: ["Yupiter", "Mars", "Yer", "Merkuri"], c: 0 }
         ];
 
         let currentUser = null;
         let adminClicks = 0;
         let gameTimer;
+
+        function sendMsg() {
+            const inp = document.getElementById('chat-input');
+            const txt = inp.value.trim();
+            if(txt && currentUser) {
+                db.ref('chat').push({ u: currentUser.name, t: txt, v: currentUser.isVIP, ts: Date.now() });
+                inp.value = "";
+            }
+        }
+
+        function listenChat() {
+            db.ref('chat').limitToLast(20).on('value', snap => {
+                const box = document.getElementById('chat-messages');
+                box.innerHTML = "";
+                snap.forEach(c => {
+                    const m = c.val();
+                    const d = document.createElement('div');
+                    d.className = "chat-msg";
+                    d.innerHTML = `<span class="chat-user" style="color:${m.v ? 'var(--neon-green)':'var(--neon-blue)'}">${m.u}:</span> ${m.t}`;
+                    box.appendChild(d);
+                });
+                box.scrollTop = box.scrollHeight;
+            });
+        }
 
         function show(id) {
             document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
@@ -250,18 +243,15 @@
 
         function register() {
             let name = document.getElementById('reg-name').value;
-            if(name.length < 3) return alert("Ad çox qısadır!");
+            if(name.length < 3) return alert("Ad qısadır!");
             let id = "BIT-" + Math.floor(1000 + Math.random() * 9000);
-            let newUser = { id: id, name: name, bits: 0, limit: 2, isVIP: false };
-            db.ref('users/' + id).set(newUser).then(() => { loginWithUser(newUser); });
+            let newUser = { id, name, bits: 0, limit: 2, isVIP: false };
+            db.ref('users/' + id).set(newUser).then(() => loginWithUser(newUser));
         }
 
         function login() {
             let id = document.getElementById('login-id').value.toUpperCase();
-            db.ref('users/' + id).once('value', (s) => {
-                if(s.exists()) loginWithUser(s.val());
-                else alert("ID tapılmadı!");
-            });
+            db.ref('users/' + id).once('value', s => s.exists() ? loginWithUser(s.val()) : alert("Tapılmadı!"));
         }
 
         function loginWithUser(user) {
@@ -270,6 +260,7 @@
             updateDash();
             show('scr-dash');
             startLeaderboardSync();
+            listenChat();
         }
 
         function updateDash() {
@@ -279,17 +270,14 @@
             document.getElementById('u-bits').innerText = currentUser.bits;
             document.getElementById('u-limit').innerText = currentUser.isVIP ? "∞" : currentUser.limit + "/2";
             let container = document.getElementById('btn-container');
-            if (!currentUser.isVIP && currentUser.limit <= 0) {
-                container.innerHTML = `<button class="btn btn-wa" onclick="contactAdmin()">LİMİTSİZ AL</button>`;
-            } else {
-                container.innerHTML = `<button class="btn" onclick="startGame()">DÖYÜŞƏ BAŞLA</button>`;
-            }
+            container.innerHTML = (!currentUser.isVIP && currentUser.limit <= 0) ? 
+                `<button class="btn btn-wa" onclick="contactAdmin()">LİMİTSİZ AL</button>` : 
+                `<button class="btn" onclick="startGame()">DÖYÜŞƏ BAŞLA</button>`;
         }
 
         function startLeaderboardSync() {
             db.ref('users').orderByChild('bits').limitToLast(10).on('value', (snapshot) => {
-                let list = [];
-                snapshot.forEach(child => { list.push(child.val()); });
+                let list = []; snapshot.forEach(child => { list.push(child.val()); });
                 list.reverse();
                 let html = "";
                 list.forEach((u, i) => {
@@ -327,22 +315,22 @@
         }
 
         function saveToDB() { if(currentUser) db.ref('users/' + currentUser.id).update(currentUser); }
-
         function logout() { localStorage.removeItem('bb_user_id'); location.reload(); }
-
-        function contactAdmin() {
-            let msg = `Salam! ID: ${currentUser.id} üçün limitsiz oyun istəyirəm.`;
-            window.open(`https://wa.me/994773220807?text=${encodeURIComponent(msg)}`, '_blank');
+        function contactAdmin() { window.open(`https://wa.me/994773220807?text=ID: ${currentUser.id} limit istəyirəm`, '_blank'); }
+        
+        function adminClick() { 
+            adminClicks++; 
+            if(adminClicks >= 5) { 
+                adminClicks = 0; show('scr-admin'); 
+                db.ref('users').once('value', s => { document.getElementById('admin-count').innerText = "Cəmi İstifadəçi: " + s.numChildren(); });
+            } 
         }
-
-        function adminClick() { adminClicks++; if(adminClicks >= 5) { adminClicks = 0; show('scr-admin'); } }
 
         function checkAdmin() {
             let pass = document.getElementById('admin-pass').value;
-            db.ref('settings/adminPass').once('value', (s) => {
-                if(s.exists() && s.val() === pass) {
-                    document.getElementById('admin-tools').classList.remove('hidden');
-                } else alert("Təhlükəsizlik şifrəsi yanlışdır!");
+            db.ref('settings/adminPass').once('value', s => {
+                if(s.exists() && s.val() === pass) document.getElementById('admin-tools').classList.remove('hidden');
+                else alert("Səhv!");
             });
         }
 
@@ -353,13 +341,11 @@
 
         window.onload = () => {
             let savedId = localStorage.getItem('bb_user_id');
-            if(savedId) {
-                db.ref('users/' + savedId).once('value', (s) => {
-                    if(s.exists()) loginWithUser(s.val());
-                    else startLeaderboardSync();
-                });
-            } else startLeaderboardSync();
+            if(savedId) db.ref('users/' + savedId).once('value', s => s.exists() ? loginWithUser(s.val()) : startLeaderboardSync());
+            else startLeaderboardSync();
         }
+
+        document.getElementById('chat-input')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
     </script>
 </body>
 </html>
