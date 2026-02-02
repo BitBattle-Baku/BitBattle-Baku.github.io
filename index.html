@@ -123,7 +123,6 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // BÜTÜN 75 SUAL (65 Orijinal + 10 Yeni Çətin)
         const questions = [
             { q: "Hansı tərəzi ilə çəki çəkmək olmaz?", o: ["Mətbəx", "Bürclər", "Elektron", "Mexaniki"], c: 1 },
             { q: "Mən danışmıram, amma hər şeyə cavab verirəm. Nəyəm?", o: ["Güzgü", "Kitab", "Əks-səda", "Külək"], c: 2 },
@@ -190,7 +189,6 @@
             { q: "Hansı ədəd həm təkdir, həm də cüt?", o: ["0", "1", "2", "Heç biri"], c: 3 },
             { q: "Bir sutka neçə saniyədir?", o: ["3600", "24000", "86400", "60000"], c: 2 },
             { q: "Kvadratın neçə tərəfi var?", o: ["3", "4", "5", "6"], c: 1 },
-            /* 10 YENİ ÇƏTİN SUAL */
             { q: "Hansı rəqəm Roma rəqəmləri sistemində mövcud deyil?", o: ["I", "V", "X", "0"], c: 3 },
             { q: "Dünyanın ən uzun sahil xəttinə malik ölkəsi hansıdır?", o: ["Rusiya", "Kanada", "Avstraliya", "ABŞ"], c: 1 },
             { q: "Şahmatda 'En Passant' gedişi hansı fiqura aiddir?", o: ["At", "Piyada", "Fil", "Şah"], c: 1 },
@@ -212,7 +210,7 @@
             const txt = inp.value.trim();
             if(txt && currentUser) {
                 db.ref('chat').push({ u: currentUser.name, t: txt, v: currentUser.isVIP, ts: Date.now() });
-                inp.value = "";
+                // Yazı qutusu boşalmasın deyə inp.value = ""; silindi
             }
         }
 
