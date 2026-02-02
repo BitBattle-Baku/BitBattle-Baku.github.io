@@ -39,7 +39,6 @@
             animation: fadeIn 0.5s ease-out;
         }
 
-        /* Gündəlik Hədiyyə Düyməsi */
         .gift-btn {
             background: linear-gradient(45deg, #ff00ff, #800080);
             border: 1px solid white;
@@ -88,7 +87,6 @@
         .opt-btn:hover { background: rgba(0, 242, 255, 0.2); }
         .rank-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-left: 5px; vertical-align: middle; }
 
-        /* GİZLİ ADMİN KEÇİDİ - SAĞ ALT KÜNC */
         .footer-trigger { 
             position: fixed; bottom: 10px; right: 10px; 
             font-size: 0.6rem; color: var(--neon-blue); 
@@ -96,7 +94,7 @@
         }
 
         @media (max-width: 850px) {
-            body { flex-direction: column; overflow-y: auto; justify-content: flex-start; padding-top: 20px; background-attachment: scroll; }
+            body { flex-direction: column; overflow-y: auto; justify-content: flex-start; padding-top: 20px; }
             .side-leaderboard { position: relative; right: auto; top: auto; transform: none; width: 100%; max-width: 420px; margin-top: 20px; order: 2; }
             .card { order: 1; }
         }
@@ -170,10 +168,19 @@
     <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
 
     <script>
+        // SƏSLƏR - YENİLƏNDİ
         const sfx = {
-            correct: new Audio('https://assets.mixkit.co/active_storage/sfx/2000/2000-preview.mp3'),
-            wrong: new Audio('https://assets.mixkit.co/active_storage/sfx/2003/2003-preview.mp3')
+            correct: new Audio('https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3'),
+            wrong: new Audio('https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3')
         };
+
+        // Brauzer blokunu aşmaq üçün səs aktivləşdirmə
+        function unlockAudio() {
+            sfx.correct.play().then(() => { sfx.correct.pause(); sfx.correct.currentTime = 0; });
+            sfx.wrong.play().then(() => { sfx.wrong.pause(); sfx.wrong.currentTime = 0; });
+            document.removeEventListener('click', unlockAudio);
+        }
+        document.addEventListener('click', unlockAudio);
 
         const firebaseConfig = {
             apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
@@ -226,7 +233,45 @@
             { q: "Ardıcıllığı tamamla: 1, 8, 27, 64, ?", o: ["100", "121", "125", "150"], c: 2 },
             { q: "Əlifbamızda neçə sait var?", o: ["7", "8", "9", "10"], c: 2 },
             { q: "Həm meyvədir, həm də rəng?", o: ["Nar", "Limon", "Portağal", "Banan"], c: 2 },
-            { q: "Su neçə dərəcədə donur?", o: ["-1", "0", "1", "4"], c: 1 },<br>            { q: "Hansı metal otaq temperaturunda maye halındadır?", o: ["Qurğuşun", "Civə", "Qalay", "Mis"], c: 1 },<br>            { q: "Bir kilo pambıq ağırdır, yoxsa bir kilo dəmir?", o: ["Pambıq", "Dəmir", "Bərabərdir", "Həcmə bağlıdır"], c: 2 },<br>            { q: "Şahmat taxtasında neçə xana var?", o: ["32", "60", "64", "100"], c: 2 },<br>            { q: "Bir ağacın 10 budağı var, hər budaqda 10 quş var. Cəmi neçə quş var?", o: ["10", "100", "1000", "110"], c: 1 },<br>            { q: "Hansı tək rəqəmli ədədi 2-yə vurduqda 2 rəqəmli ədəd alınmır?", o: ["4", "5", "6", "7"], c: 0 },<br>            { q: "Yarısı 5 olan ədədin 3 qatı neçədir?", o: ["15", "25", "30", "45"], c: 2 },<br>            { q: "Mənim 3 almam var, sən mənə 2-sini verdin. İndi mənim neçə almam var?", o: ["2", "3", "5", "1"], c: 1 },<br>            { q: "Hansı rəqəmin adı ilə yazılışı eyni sayda hərfdən ibarətdir?", o: ["1", "3", "4", "6"], c: 2 },<br>            { q: "Divarda 5 milçək var idi, 2-sini öldürdülər. Divarda neçə milçək qaldı?", o: ["0", "2", "3", "5"], c: 1 },<br>            { q: "Hansı heyvanın adı 2 hərfdən ibarətdir?", o: ["At", "İt", "Fil", "Ayı"], c: 0 },<br>            { q: "Gündüzlər yatır, gecələr uçur, amma quş deyil?", o: ["Yarasa", "Bayquş", "Kəpənək", "Arı"], c: 0 },<br>            { q: "Hansı suala 'Xeyr' cavabı vermək mümkün deyil?", o: ["Acsan?", "Sağsan?", "Görürsən?", "Gedirsən?"], c: 1 },<br>            { q: "Nədir ki, hamıdan əvvəl evə girir?", o: ["Açar", "İşıq", "Pişik", "Külək"], c: 0 },<br>            { q: "Kompüterin 'beyni' hansı hissədir?", o: ["RAM", "Monitor", "Prosessor", "Klaviatura"], c: 2 },<br>            { q: "Dünyanın ilk proqramçısı kim olub?", o: ["Bill Gates", "Elon Musk", "Ada Lovelace", "Mark Zuckerberg"], c: 2 },<br>            { q: "Bit nəyin qısaltmasıdır?", o: ["Big IT", "Binary Digit", "Basic Tool", "Binary Inter"], c: 1 },<br>            { q: "Hansı proqramlaşdırma dili daha qədimdir?", o: ["Python", "C++", "Java", "JavaScript"], c: 1 },<br>            { q: "URL nədir?", o: ["Şəkil", "İnternet ünvanı", "Fayl", "Virus"], c: 1 },<br>            { q: "Dədə Qorqud boylarında neçə boy var?", o: ["10", "12", "15", "20"], c: 1 },<br>            { q: "Şuşa ili neçənci il elan olunmuşdu?", o: ["2020", "2021", "2022", "2023"], c: 2 },<br>            { q: "Azərbaycanın ilk paytaxtı haradır?", o: ["Gəncə", "Təbriz", "Bakı", "Qədim Qəbələ"], c: 3 },<br>            { q: "Qız qalası hansı şəhədə yerləşir?", o: ["Gəncə", "Bakı", "Naxçıvan", "Lənkəran"], c: 1 },<br>            { q: "Hansı alət Azərbaycanın milli musiqi alətidir?", o: ["Gitara", "Tar", "Skripka", "Pianino"], c: 1 },<br>            { q: "15 x 4 + 10 = ?", o: ["60", "70", "80", "100"], c: 1 },<br>            { q: "100-ün 10%-i neçədir?", o: ["1", "5", "10", "20"], c: 2 },<br>            { q: "Hansı ədəd həm təkdir, həm də cüt?", o: ["0", "1", "2", "Heç biri"], c: 3 },<br>            { q: "Bir sutka neçə saniyədir?", o: ["3600", "24000", "86400", "60000"], c: 2 },<br>            { q: "Kvadratın neçə tərəfi var?", o: ["3", "4", "5", "6"], c: 1 },<br>            { q: "Hansı rəqəm Roma rəqəmləri sistemində mövcud deyil?", o: ["I", "V", "X", "0"], c: 3 },<br>            { q: "Dünyanın ən uzun sahil xəttinə malik ölkəsi hansıdır?", o: ["Rusiya", "Kanada", "Avstraliya", "ABŞ"], c: 1 },<br>            { q: "Şahmatda 'En Passant' gedişi hansı fiqura aiddir?", o: ["At", "Piyada", "Fil", "Şah"], c: 1 },<br>            { q: "İşıq sürəti təxminən saniyədə neçə kilometrdir?", o: ["150.000", "200.000", "300.000", "400.000"], c: 2 },<br>            { q: "İnsan bədənindəki ən kiçik sümük haradadır?", o: ["Burun", "Qulaq", "Barmaq", "Diz"], c: 1 },<br>            { q: "Hansı elementin kimyəvi simvolu 'W'-dir?", o: ["Qızıl", "Dəmir", "Volfram", "Gümüş"], c: 2 },<br>            { q: "İlk kompüter proqramçısı kim hesab olunur?", o: ["Marie Curie", "Ada Lovelace", "Grace Hopper", "Hedy Lamarr"], c: 1 },<br>            { q: "Dünyada ən çox dildə danışılan ölkə hansıdır?", o: ["Hindistan", "Çin", "Papua Yeni Qvineya", "Braziliya"], c: 2 },<br>            { q: "Vatikan dövlətinin rəsmi dili hansıdır?", o: ["İtalyan", "Latın", "Fransız", "İspan"], c: 1 },<br>            { q: "Günəş sistemində öz oxu ətrafında ən sürətli fırlanan planet?", o: ["Yupiter", "Mars", "Yer", "Merkuri"], c: 0 }
+            { q: "Su neçə dərəcədə donur?", o: ["-1", "0", "1", "4"], c: 1 },
+            { q: "Hansı metal otaq temperaturunda maye halındadır?", o: ["Qurğuşun", "Civə", "Qalay", "Mis"], c: 1 },
+            { q: "Bir kilo pambıq ağırdır, yoxsa bir kilo dəmir?", o: ["Pambıq", "Dəmir", "Bərabərdir", "Həcmə bağlıdır"], c: 2 },
+            { q: "Şahmat taxtasında neçə xana var?", o: ["32", "60", "64", "100"], c: 2 },
+            { q: "Bir ağacın 10 budağı var, hər budaqda 10 quş var. Cəmi neçə quş var?", o: ["10", "100", "1000", "110"], c: 1 },
+            { q: "Hansı tək rəqəmli ədədi 2-yə vurduqda 2 rəqəmli ədəd alınmır?", o: ["4", "5", "6", "7"], c: 0 },
+            { q: "Yarısı 5 olan ədədin 3 qatı neçədir?", o: ["15", "25", "30", "45"], c: 2 },
+            { q: "Mənim 3 almam var, sən mənə 2-sini verdin. İndi mənim neçə almam var?", o: ["2", "3", "5", "1"], c: 1 },
+            { q: "Hansı rəqəmin adı ilə yazılışı eyni sayda hərfdən ibarətdir?", o: ["1", "3", "4", "6"], c: 2 },
+            { q: "Divarda 5 milçək var idi, 2-sini öldürdülər. Divarda neçə milçək qaldı?", o: ["0", "2", "3", "5"], c: 1 },
+            { q: "Hansı heyvanın adı 2 hərfdən ibarətdir?", o: ["At", "İt", "Fil", "Ayı"], c: 0 },
+            { q: "Gündüzlər yatır, gecələr uçur, amma quş deyil?", o: ["Yarasa", "Bayquş", "Kəpənək", "Arı"], c: 0 },
+            { q: "Hansı suala 'Xeyr' cavabı vermək mümkün deyil?", o: ["Acsan?", "Sağsan?", "Görürsən?", "Gedirsən?"], c: 1 },
+            { q: "Nədir ki, hamıdan əvvəl evə girir?", o: ["Açar", "İşıq", "Pişik", "Külək"], c: 0 },
+            { q: "Kompüterin 'beyni' hansı hissədir?", o: ["RAM", "Monitor", "Prosessor", "Klaviatura"], c: 2 },
+            { q: "Dünyanın ilk proqramçısı kim olub?", o: ["Bill Gates", "Elon Musk", "Ada Lovelace", "Mark Zuckerberg"], c: 2 },
+            { q: "Bit nəyin qısaltmasıdır?", o: ["Big IT", "Binary Digit", "Basic Tool", "Binary Inter"], c: 1 },
+            { q: "Hansı proqramlaşdırma dili daha qədimdir?", o: ["Python", "C++", "Java", "JavaScript"], c: 1 },
+            { q: "URL nədir?", o: ["Şəkil", "İnternet ünvanı", "Fayl", "Virus"], c: 1 },
+            { q: "Dədə Qorqud boylarında neçə boy var?", o: ["10", "12", "15", "20"], c: 1 },
+            { q: "Şuşa ili neçənci il elan olunmuşdu?", o: ["2020", "2021", "2022", "2023"], c: 2 },
+            { q: "Azərbaycanın ilk paytaxtı haradır?", o: ["Gəncə", "Təbriz", "Bakı", "Qədim Qəbələ"], c: 3 },
+            { q: "Qız qalası hansı şəhərdə yerləşir?", o: ["Gəncə", "Bakı", "Naxçıvan", "Lənkəran"], c: 1 },
+            { q: "Hansı alət Azərbaycanın milli musiqi alətidir?", o: ["Gitara", "Tar", "Skripka", "Pianino"], c: 1 },
+            { q: "15 x 4 + 10 = ?", o: ["60", "70", "80", "100"], c: 1 },
+            { q: "100-ün 10%-i neçədir?", o: ["1", "5", "10", "20"], c: 2 },
+            { q: "Hansı ədəd həm təkdir, həm də cüt?", o: ["0", "1", "2", "Heç biri"], c: 3 },
+            { q: "Bir sutka neçə saniyədir?", o: ["3600", "24000", "86400", "60000"], c: 2 },
+            { q: "Kvadratın neçə tərəfi var?", o: ["3", "4", "5", "6"], c: 1 },
+            { q: "Hansı rəqəm Roma rəqəmləri sistemində mövcud deyil?", o: ["I", "V", "X", "0"], c: 3 },
+            { q: "Dünyanın ən uzun sahil xəttinə malik ölkəsi hansıdır?", o: ["Rusiya", "Kanada", "Avstraliya", "ABŞ"], c: 1 },
+            { q: "Şahmatda 'En Passant' gedişi hansı fiqura aiddir?", o: ["At", "Piyada", "Fil", "Şah"], c: 1 },
+            { q: "İşıq sürəti təxminən saniyədə neçə kilometrdir?", o: ["150.000", "200.000", "300.000", "400.000"], c: 2 },
+            { q: "İnsan bədənindəki ən kiçik sümük haradadır?", o: ["Burun", "Qulaq", "Barmaq", "Diz"], c: 1 },
+            { q: "Hansı elementin kimyəvi simvolu 'W'-dir?", o: ["Qızıl", "Dəmir", "Volfram", "Gümüş"], c: 2 },
+            { q: "İlk kompüter proqramçısı kim hesab olunur?", o: ["Marie Curie", "Ada Lovelace", "Grace Hopper", "Hedy Lamarr"], c: 1 },
+            { q: "Dünyada ən çox dildə danışılan ölkə hansıdır?", o: ["Hindistan", "Çin", "Papua Yeni Qvineya", "Braziliya"], c: 2 },
+            { q: "Vatikan dövlətinin rəsmi dili hansıdır?", o: ["İtalyan", "Latın", "Fransız", "İspan"], c: 1 },
+            { q: "Günəş sistemində öz oxu ətrafında ən sürətli fırlanan planet?", o: ["Yupiter", "Mars", "Yer", "Merkuri"], c: 0 }
         ];
 
         let currentUser = null;
@@ -243,12 +288,7 @@
             const inp = document.getElementById('chat-input');
             const txt = inp.value.trim();
             if(txt && currentUser) {
-                db.ref('chat').push({ 
-                    u: currentUser.name, 
-                    t: txt, 
-                    v: currentUser.isVIP, 
-                    ts: firebase.database.ServerValue.TIMESTAMP 
-                });
+                db.ref('chat').push({ u: currentUser.name, t: txt, v: currentUser.isVIP, ts: firebase.database.ServerValue.TIMESTAMP });
                 inp.value = "";
             }
         }
@@ -316,7 +356,7 @@
             saveToDB();
             updateDash();
             checkBonusAvailability();
-            sfx.correct.play();
+            sfx.correct.play().catch(e => console.log("Audio play failed"));
             alert("Təbriklər! Gündəlik +2 Limit Hədiyyə Edildi 🎁");
         }
 
@@ -346,10 +386,7 @@
                 let html = "";
                 list.forEach((u, i) => {
                     const rank = getRank(u.bits);
-                    html += `<div class="leader-item">
-                        <span>${i+1}. ${u.name} <small style="color:${rank.color}">[${rank.name}]</small>${u.isVIP ? '<span class="vip-tag">VIP</span>' : ''}</span>
-                        <span style="color:var(--neon-blue)">${u.bits}</span>
-                    </div>`;
+                    html += `<div class="leader-item"><span>${i+1}. ${u.name} <small style="color:${rank.color}">[${rank.name}]</small>${u.isVIP ? '<span class="vip-tag">VIP</span>' : ''}</span><span style="color:var(--neon-blue)">${u.bits}</span></div>`;
                 });
                 document.getElementById('leader-list').innerHTML = html;
             });
@@ -365,40 +402,27 @@
             let time = 10;
             document.getElementById('timer').innerText = time;
             document.getElementById('timer').style.color = "var(--neon-green)";
-            
             let q = questions[Math.floor(Math.random()*questions.length)];
             document.getElementById('q-text').innerText = q.q;
             let opts = document.getElementById('q-opts');
             opts.innerHTML = "";
-            
             q.o.forEach((o, i) => {
                 let b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
                 b.onclick = () => {
                     if(i === q.c) { 
-                        sfx.correct.play();
-                        currentUser.bits += 50; 
-                        saveToDB(); 
-                        loadQuestion(); 
+                        sfx.correct.play().catch(e => {});
+                        currentUser.bits += 50; saveToDB(); loadQuestion(); 
                     } else { 
-                        sfx.wrong.play();
-                        alert("YALNIŞ!"); 
-                        show('scr-dash'); 
-                        updateDash(); 
+                        sfx.wrong.play().catch(e => {});
+                        alert("YALNIŞ!"); show('scr-dash'); updateDash(); 
                     }
                 };
                 opts.appendChild(b);
             });
-            
             gameTimer = setInterval(() => {
-                time--; 
-                document.getElementById('timer').innerText = time;
+                time--; document.getElementById('timer').innerText = time;
                 if(time <= 3) document.getElementById('timer').style.color = "red";
-                if(time <= 0) { 
-                    sfx.wrong.play();
-                    clearInterval(gameTimer); 
-                    show('scr-dash'); 
-                    updateDash(); 
-                }
+                if(time <= 0) { sfx.wrong.play().catch(e => {}); clearInterval(gameTimer); show('scr-dash'); updateDash(); }
             }, 1000);
         }
 
@@ -406,13 +430,7 @@
         function logout() { localStorage.removeItem('bb_user_id'); location.reload(); }
         function contactAdmin() { window.open(`https://wa.me/994773220807?text=ID: ${currentUser.id} limit istəyirəm`, '_blank'); }
         
-        function adminClick() { 
-            adminClicks++; 
-            if(adminClicks >= 5) { 
-                adminClicks = 0; show('scr-admin'); 
-                db.ref('users').once('value', s => { document.getElementById('admin-count').innerText = "Cəmi İstifadəçi: " + s.numChildren(); });
-            } 
-        }
+        function adminClick() { adminClicks++; if(adminClicks >= 5) { adminClicks = 0; show('scr-admin'); db.ref('users').once('value', s => { document.getElementById('admin-count').innerText = "Cəmi: " + s.numChildren(); }); } }
 
         function checkAdmin() {
             let pass = document.getElementById('admin-pass').value;
