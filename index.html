@@ -123,6 +123,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
+        // [Suallar siyahısı eyni qaldı...]
         const questions = [
             { q: "Hansı tərəzi ilə çəki çəkmək olmaz?", o: ["Mətbəx", "Bürclər", "Elektron", "Mexaniki"], c: 1 },
             { q: "Mən danışmıram, amma hər şeyə cavab verirəm. Nəyəm?", o: ["Güzgü", "Kitab", "Əks-səda", "Külək"], c: 2 },
@@ -205,20 +206,28 @@
         let adminClicks = 0;
         let gameTimer;
 
+        // Mesaj göndərmə funksiyası - Düzəldildi
         function sendMsg() {
             const inp = document.getElementById('chat-input');
             const txt = inp.value.trim();
             if(txt && currentUser) {
-                db.ref('chat').push({ u: currentUser.name, t: txt, v: currentUser.isVIP, ts: Date.now() });
-                inp.value = ""; // Mesaj gedəndə qutu təmizlənsin
+                db.ref('chat').push({ 
+                    u: currentUser.name, 
+                    t: txt, 
+                    v: currentUser.isVIP, 
+                    ts: firebase.database.ServerValue.TIMESTAMP 
+                });
+                inp.value = "";
             }
         }
 
+        // Çatı dinləmə funksiyası - ARTIQ SİLMİR, SÖZ VERİRƏM!
         function listenChat() {
-            // limitToLast(10) edildi - yalnız son 10 mesaj görünəcək
+            // Firebase-dən yalnız son 10 mesajı oxuyur (amma köhnələri silmir)
             db.ref('chat').limitToLast(10).on('value', snap => {
                 const box = document.getElementById('chat-messages');
                 box.innerHTML = "";
+                
                 snap.forEach(c => {
                     const m = c.val();
                     const d = document.createElement('div');
