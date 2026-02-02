@@ -12,19 +12,59 @@
     <style>
         :root { --bg: #02050a; --panel: #0b111d; --neon-blue: #00f2ff; --neon-pink: #ff00ff; --neon-green: #39ff14; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Poppins', sans-serif; color: white; overflow: hidden; }
         
-        .side-leaderboard { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); width: 260px; background: rgba(11, 17, 29, 0.95); border: 2px solid var(--neon-pink); padding: 20px; border-radius: 15px; max-height: 80vh; display: flex; flex-direction: column; z-index: 10; box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); }
+        body { 
+            background: var(--bg); 
+            min-height: 100vh; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            font-family: 'Poppins', sans-serif; 
+            color: white; 
+            overflow-x: hidden; 
+            padding: 20px;
+        }
+        
+        /* Liderlik Cədvəli - Desktop üçün sağda, mobil üçün aşağıda */
+        .side-leaderboard { 
+            position: fixed; 
+            right: 20px; 
+            top: 50%; 
+            transform: translateY(-50%); 
+            width: 260px; 
+            background: rgba(11, 17, 29, 0.95); 
+            border: 2px solid var(--neon-pink); 
+            padding: 20px; 
+            border-radius: 15px; 
+            max-height: 80vh; 
+            display: flex; 
+            flex-direction: column; 
+            z-index: 10; 
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); 
+        }
+
         .leader-list { overflow-y: auto; flex-grow: 1; }
         .leader-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
         .vip-tag { color: var(--neon-green); font-weight: bold; font-size: 0.6rem; margin-left: 5px; border: 1px solid; padding: 1px 3px; border-radius: 3px; }
 
-        .card { background: var(--panel); padding: 40px; border-radius: 30px; border: 2px solid var(--neon-blue); width: 420px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); position: relative; }
+        .card { 
+            background: var(--panel); 
+            padding: 40px; 
+            border-radius: 30px; 
+            border: 2px solid var(--neon-blue); 
+            width: 100%;
+            max-width: 420px; 
+            text-align: center; 
+            box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); 
+            position: relative; 
+            z-index: 5;
+        }
+
         h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-bottom: 25px; text-shadow: 0 0 10px var(--neon-blue); }
         
         .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 10px; background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)); color: white; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
         .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
-        .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; }
+        .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; border: none !important; }
         
         input { width: 100%; padding: 12px; background: #151c2c; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; }
         .hidden { display: none !important; }
@@ -32,16 +72,33 @@
         
         .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: #1a243a; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
         .opt-btn:hover { background: var(--neon-blue); color: black; }
-        .footer-trigger { position: fixed; bottom: 10px; font-size: 0.7rem; color: var(--neon-blue); cursor: pointer; opacity: 0.4; letter-spacing: 2px; }
+        
+        .footer-trigger { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 0.7rem; color: var(--neon-blue); cursor: pointer; opacity: 0.4; letter-spacing: 2px; }
+
+        /* MOBİL ÜÇÜN DÜZƏLİŞLƏR */
+        @media (max-width: 850px) {
+            body { 
+                flex-direction: column; 
+                overflow-y: auto; 
+                justify-content: flex-start; 
+                padding-top: 40px;
+                padding-bottom: 100px; /* Footer üçün yer */
+            }
+            .side-leaderboard { 
+                position: relative; 
+                right: auto; 
+                top: auto; 
+                transform: none; 
+                width: 100%; 
+                max-width: 420px;
+                margin-top: 20px; 
+                order: 2; /* Kartdan sonra gəlsin */
+            }
+            .card { order: 1; }
+        }
     </style>
 </head>
 <body>
-
-    <div class="side-leaderboard">
-        <h3 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--neon-pink); text-align: center; margin-bottom: 15px;">GLOBAL TOP 10</h3>
-        <div class="leader-list" id="leader-list">Yüklənir...</div>
-        <button onclick="logout()" style="background:none; border:none; color:#ff4444; cursor:pointer; text-decoration:underline; font-size:0.65rem; margin-top:10px;">Hesabdan Çıx</button>
-    </div>
 
     <div class="card" id="scr-auth">
         <h1>BIT BATTLE</h1>
@@ -85,9 +142,16 @@
         </div>
     </div>
 
+    <div class="side-leaderboard">
+        <h3 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--neon-pink); text-align: center; margin-bottom: 15px;">GLOBAL TOP 10</h3>
+        <div class="leader-list" id="leader-list">Yüklənir...</div>
+        <button onclick="logout()" style="background:none; border:none; color:#ff4444; cursor:pointer; text-decoration:underline; font-size:0.65rem; margin-top:10px;">Hesabdan Çıx</button>
+    </div>
+
     <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
 
     <script>
+        // FIREBASE CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
             authDomain: "bitbattle-64c13.firebaseapp.com",
@@ -273,7 +337,6 @@
 
         function adminClick() { adminClicks++; if(adminClicks >= 5) { adminClicks = 0; show('scr-admin'); } }
 
-        // TƏHLÜKƏSİZ ADMİN YOXLAMASI (Bazadan yoxlayır)
         function checkAdmin() {
             let pass = document.getElementById('admin-pass').value;
             db.ref('settings/adminPass').once('value', (s) => {
