@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitBattle | Secure Edition</title>
+    
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Poppins:wght@300;500;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #02050a; --panel: #0b111d; --neon-blue: #00f2ff; --neon-pink: #ff00ff; --neon-green: #39ff14; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); height: 100vh; display: flex; justify-content: center; align-items: center; font-family: 'Poppins', sans-serif; color: white; overflow: hidden; }
+        
+        .side-leaderboard { position: fixed; right: 20px; top: 50%; transform: translateY(-50%); width: 260px; background: rgba(11, 17, 29, 0.95); border: 2px solid var(--neon-pink); padding: 20px; border-radius: 15px; max-height: 80vh; display: flex; flex-direction: column; z-index: 10; box-shadow: 0 0 20px rgba(255, 0, 255, 0.2); }
+        .leader-list { overflow-y: auto; flex-grow: 1; }
+        .leader-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
+        .vip-tag { color: var(--neon-green); font-weight: bold; font-size: 0.6rem; margin-left: 5px; border: 1px solid; padding: 1px 3px; border-radius: 3px; }
+
+        .card { background: var(--panel); padding: 40px; border-radius: 30px; border: 2px solid var(--neon-blue); width: 420px; text-align: center; box-shadow: 0 0 40px rgba(0, 242, 255, 0.1); position: relative; }
+        h1 { font-family: 'Orbitron', sans-serif; color: var(--neon-blue); margin-bottom: 25px; text-shadow: 0 0 10px var(--neon-blue); }
+        
+        .btn { width: 100%; padding: 14px; margin: 10px 0; border: none; border-radius: 10px; background: linear-gradient(45deg, var(--neon-blue), var(--neon-pink)); color: white; font-weight: 900; cursor: pointer; text-transform: uppercase; transition: 0.3s; }
+        .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
+        .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; }
+        
+        input { width: 100%; padding: 12px; background: #151c2c; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; }
+        .hidden { display: none !important; }
+        .id-display { color: var(--neon-green); font-weight: bold; font-family: monospace; border: 1px dashed var(--neon-green); padding: 5px 15px; margin: 10px 0; display: inline-block; }
+        
+        .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: #1a243a; border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
+        .opt-btn:hover { background: var(--neon-blue); color: black; }
+        .footer-trigger { position: fixed; bottom: 10px; font-size: 0.7rem; color: var(--neon-blue); cursor: pointer; opacity: 0.4; letter-spacing: 2px; }
+    </style>
+</head>
+<body>
+
+    <div class="side-leaderboard">
+        <h3 style="font-family:'Orbitron'; font-size: 0.9rem; color: var(--neon-pink); text-align: center; margin-bottom: 15px;">GLOBAL TOP 10</h3>
+        <div class="leader-list" id="leader-list">Yüklənir...</div>
+        <button onclick="logout()" style="background:none; border:none; color:#ff4444; cursor:pointer; text-decoration:underline; font-size:0.65rem; margin-top:10px;">Hesabdan Çıx</button>
+    </div>
+
+    <div class="card" id="scr-auth">
+        <h1>BIT BATTLE</h1>
+        <div id="auth-reg">
+            <input type="text" id="reg-name" placeholder="Döyüşçü Adı">
+            <button class="btn" onclick="register()">Qeydiyyatdan Keç</button>
+            <p style="font-size: 0.8rem; margin-top: 10px;">ID-niz var? <a href="#" onclick="toggleAuth(true)" style="color: var(--neon-blue);">Giriş edin</a></p>
+        </div>
+        <div id="auth-login" class="hidden">
+            <input type="text" id="login-id" placeholder="Məs: BIT-1234">
+            <button class="btn" onclick="login()">Daxil Ol</button>
+            <p style="font-size: 0.8rem; margin-top: 10px;">Yeni istifadəçi? <a href="#" onclick="toggleAuth(false)" style="color: var(--neon-blue);">Qeydiyyat</a></p>
+        </div>
+    </div>
+
+    <div class="card hidden" id="scr-dash">
+        <p style="font-size: 0.75rem;">Giriş ID-niz:</p>
+        <div class="id-display" id="u-id">...</div>
+        <h2 id="u-welcome" style="margin: 10px 0; font-family:'Orbitron';">Pilot</h2>
+        <div style="display: flex; justify-content: space-around; margin: 20px 0; border-top: 1px solid #222; padding-top: 15px;">
+            <span>BIT: <b id="u-bits" style="color:var(--neon-blue)">0</b></span>
+            <span>Limit: <b id="u-limit" style="color:var(--neon-pink)">2/2</b></span>
+        </div>
+        <div id="btn-container"></div>
+    </div>
+
+    <div class="card hidden" id="scr-game">
+        <div id="timer" style="font-size: 2.5rem; color: var(--neon-green); font-family: 'Orbitron';">10</div>
+        <p id="q-text" style="margin: 25px 0; font-size: 1.1rem; min-height: 60px; font-weight: 500;"></p>
+        <div id="q-opts"></div>
+    </div>
+
+    <div class="card hidden" id="scr-admin">
+        <h2 style="color:red; font-family:'Orbitron';">SİSTEM ADMİN</h2>
+        <input type="password" id="admin-pass" placeholder="Təhlükəsizlik Şifrəsi">
+        <button class="btn" onclick="checkAdmin()">Yoxla</button>
+        <div id="admin-tools" class="hidden">
+            <input type="text" id="target-id" placeholder="İstifadəçi ID">
+            <button class="btn" style="background:green" onclick="makeVIP()">VIP TƏYİN ET</button>
+            <button onclick="show('scr-dash')" class="btn" style="background:gray">Geri</button>
+        </div>
+    </div>
+
+    <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
+            authDomain: "bitbattle-64c13.firebaseapp.com",
+            databaseURL: "https://bitbattle-64c13-default-rtdb.firebaseio.com",
+            projectId: "bitbattle-64c13",
+            storageBucket: "bitbattle-64c13.firebasestorage.app",
+            messagingSenderId: "735228613710",
+            appId: "1:735228613710:web:14a6cee6f896ceffc11f1f",
+            measurementId: "G-S7LPFQ9JCW"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const questions = [
+            { q: "Hansı tərəzi ilə çəki çəkmək olmaz?", o: ["Mətbəx", "Bürclər", "Elektron", "Mexaniki"], c: 1 },
+            { q: "Mən danışmıram, amma hər şeyə cavab verirəm. Nəyəm?", o: ["Güzgü", "Kitab", "Əks-səda", "Külək"], c: 2 },
+            { q: "Bir ailədə 7 bacı var, hər birinin bir qardaşı var. Cəmi neçə uşaq var?", o: ["7", "8", "14", "15"], c: 1 },
+            { q: "Nə qədər çox götürsən, o qədər böyüyər?", o: ["Borc", "Çala", "Bilik", "Yük"], c: 1 },
+            { q: "Hansı ayda 28 gün var?", o: ["Fevral", "Yanvar", "Bütün aylar", "Heç biri"], c: 2 },
+            { q: "Atanın 35, oğlunun 7 yaşı var. Neçə ildən sonra ata oğlundan 3 dəfə böyük olar?", o: ["5", "7", "8", "10"], c: 1 },
+            { q: "1-dən 100-ə qədər neçə dənə 9 rəqəmi var?", o: ["10", "11", "19", "20"], c: 3 },
+            { q: "Hansı söz digərlərindən fərqlidir?", o: ["Alma", "Armud", "Kök", "Gilas"], c: 2 },
+            { q: "Kitab - Müəllif, Film - ?", o: ["Aktyor", "Rejissor", "Ssenari", "Kamera"], c: 1 },
+            { q: "Onu yemək olar, amma özü yeyə bilməz. Nədir?", o: ["Boşqab", "Çörək", "Su", "Qaşıq"], c: 0 },
+            { q: "Gecə-gündüz hərəkət edir, amma yerindən tərpənmir?", o: ["Saat", "Çay", "Külək", "Yol"], c: 0 },
+            { q: "Ayağı yoxdur qaçır, qanadı yoxdur uçur, dili yoxdur ağlayır?", o: ["Külək", "Bulud", "Duman", "Yağış"], c: 1 },
+            { q: "Nədir ki, başı var, beyni yoxdur?", o: ["Mismar", "Sancaq", "Soğan", "Kələm"], c: 2 },
+            { q: "Hansı suala 'hə' cavabı vermək mümkün deyil?", o: ["Acırsan?", "Yatırsan?", "Yorulubsan?", "Görürsən?"], c: 1 },
+            { q: "Səhər-səhər nəyi yemək olmaz?", o: ["Naharı", "Yeməyi", "Çayı", "Yuxunu"], c: 0 },
+            { q: "Ağzı var, dili yoxdur, canı yoxdur, nəfəsi var?", o: ["Tüfəng", "Fleyta", "Külək", "Balon"], c: 0 },
+            { q: "Onu hamı görür, amma Tanrı heç vaxt görmür?", o: ["İnsan", "Peyğəmplər", "Bərabərini", "Gələcəyi"], c: 2 },
+            { q: "Bir adam yağışın altında qalır, amma saçları islanmır. Niyə?", o: ["Çətiri var", "Papağı var", "Keçəldir", "Qaçır"], c: 2 },
+            { q: "Hansı qabdan yemək yemək olmaz?", o: ["Boş qabdan", "Sınıq qabdan", "Dolu qabdan", "Çirkli qabdan"], c: 0 },
+            { q: "Onu hamı saxlayır, amma heç kim görmür?", o: ["Sözü", "Nəfəsi", "Sirri", "Canı"], c: 1 },
+            { q: "2, 6, 12, 20, ? Ardıcıllığı tamamlayın.", o: ["24", "26", "30", "32"], c: 2 },
+            { q: "Üç ardıcıl ədədin cəmi 33-dür. Ən böyüyü neçədir?", o: ["10", "11", "12", "13"], c: 2 },
+            { q: "Əqrəblər saat 03:15-də neçə dərəcəlik bucaq əmələ gətirir?", o: ["0", "7.5", "15", "90"], c: 1 },
+            { q: "6 nəfər bir-biri ilə əl sıxışırsa, cəmi neçə əl sıxma olar?", o: ["12", "15", "18", "21"], c: 1 },
+            { q: "Hər 5 dəqiqədə bir ikiyə bölünən bakteriya, 1 saatda neçə dəfə bölünər?", o: ["6", "10", "12", "60"], c: 2 },
+            { q: "Dünyanın ən hündür zirvəsi hansıdır?", o: ["Qazbek", "Elbrus", "Everest", "Şahdağ"], c: 2 },
+            { q: "Hansı okeanın sahəsi ən böyükdür?", o: ["Atlantik", "Hind", "Sakit", "Şimal Buzlu"], c: 2 },
+            { q: "Azərbaycanın ən uzun çayı hansıdır?", o: ["Araz", "Kür", "Samur", "Tərtər"], c: 1 },
+            { q: "Hansı ölkə 'Gündoğan ölkə' adlanır?", o: ["Çin", "Koreya", "Yaponiya", "Vyetnam"], c: 2 },
+            { q: "Günəş sistemində ən böyük planet hansıdır?", o: ["Mars", "Saturn", "Yupiter", "Neptun"], c: 2 },
+            { q: "Yüz il yaşayan ağacın yarpaqları nə rəng olur?", o: ["Yaşıl", "Qəhvəyi", "Sarı", "Quru"], c: 0 },
+            { q: "Yalnız tək rəqəmlərdən ibarət ən böyük iki rəqəmli ədəd?", o: ["91", "97", "99", "89"], c: 2 },
+            { q: "Sıfırdan fərqli ədədi özünə böldükdə nə alınır?", o: ["0", "1", "Özü", "Sonsuz"], c: 1 },
+            { q: "Ardıcıllığı tamamla: 1, 8, 27, 64, ?", o: ["100", "121", "125", "150"], c: 2 },
+            { q: "Əlifbamızda neçə sait var?", o: ["7", "8", "9", "10"], c: 2 },
+            { q: "Həm meyvədir, həm də rəng?", o: ["Nar", "Limon", "Portağal", "Banan"], c: 2 },
+            { q: "Su neçə dərəcədə donur?", o: ["-1", "0", "1", "4"], c: 1 },
+            { q: "Hansı metal otaq temperaturunda maye halındadır?", o: ["Qurğuşun", "Civə", "Qalay", "Mis"], c: 1 },
+            { q: "Bir kilo pambıq ağırdır, yoxsa bir kilo dəmir?", o: ["Pambıq", "Dəmir", "Bərabərdir", "Həcmə bağlıdır"], c: 2 },
+            { q: "Şahmat taxtasında neçə xana var?", o: ["32", "60", "64", "100"], c: 2 },
+            { q: "Bir ağacın 10 budağı var, hər budaqda 10 quş var. Cəmi neçə quş var?", o: ["10", "100", "1000", "110"], c: 1 },
+            { q: "Hansı tək rəqəmli ədədi 2-yə vurduqda 2 rəqəmli ədəd alınmır?", o: ["4", "5", "6", "7"], c: 0 },
+            { q: "Yarısı 5 olan ədədin 3 qatı neçədir?", o: ["15", "25", "30", "45"], c: 2 },
+            { q: "Mənim 3 almam var, sən mənə 2-sini verdin. İndi mənim neçə almam var?", o: ["2", "3", "5", "1"], c: 1 },
+            { q: "Hansı rəqəmin adı ilə yazılışı eyni sayda hərfdən ibarətdir?", o: ["1", "3", "4", "6"], c: 2 },
+            { q: "Divarda 5 milçək var idi, 2-sini öldürdülər. Divarda neçə milçək qaldı?", o: ["0", "2", "3", "5"], c: 1 },
+            { q: "Hansı heyvanın adı 2 hərfdən ibarətdir?", o: ["At", "İt", "Fil", "Ayı"], c: 0 },
+            { q: "Gündüzlər yatır, gecələr uçur, amma quş deyil?", o: ["Yarasa", "Bayquş", "Kəpənək", "Arı"], c: 0 },
+            { q: "Hansı suala 'Xeyr' cavabı vermək mümkün deyil?", o: ["Acsan?", "Sağsan?", "Görürsən?", "Gedirsən?"], c: 1 },
+            { q: "Nədir ki, hamıdan əvvəl evə girir?", o: ["Açar", "İşıq", "Pişik", "Külək"], c: 0 },
+            { q: "Kompüterin 'beyni' hansı hissədir?", o: ["RAM", "Monitor", "Prosessor", "Klaviatura"], c: 2 },
+            { q: "Dünyanın ilk proqramçısı kim olub?", o: ["Bill Gates", "Elon Musk", "Ada Lovelace", "Mark Zuckerberg"], c: 2 },
+            { q: "Bit nəyin qısaltmasıdır?", o: ["Big IT", "Binary Digit", "Basic Tool", "Binary Inter"], c: 1 },
+            { q: "Hansı proqramlaşdırma dili daha qədimdir?", o: ["Python", "C++", "Java", "JavaScript"], c: 1 },
+            { q: "URL nədir?", o: ["Şəkil", "İnternet ünvanı", "Fayl", "Virus"], c: 1 },
+            { q: "Dədə Qorqud boylarında neçə boy var?", o: ["10", "12", "15", "20"], c: 1 },
+            { q: "Şuşa ili neçənci il elan olunmuşdu?", o: ["2020", "2021", "2022", "2023"], c: 2 },
+            { q: "Azərbaycanın ilk paytaxtı haradır?", o: ["Gəncə", "Təbriz", "Bakı", "Qədim Qəbələ"], c: 3 },
+            { q: "Qız qalası hansı şəhərdə yerləşir?", o: ["Gəncə", "Bakı", "Naxçıvan", "Lənkəran"], c: 1 },
+            { q: "Hansı alət Azərbaycanın milli musiqi alətidir?", o: ["Gitara", "Tar", "Skripka", "Pianino"], c: 1 },
+            { q: "15 x 4 + 10 = ?", o: ["60", "70", "80", "100"], c: 1 },
+            { q: "100-ün 10%-i neçədir?", o: ["1", "5", "10", "20"], c: 2 },
+            { q: "Hansı ədəd həm təkdir, həm də cüt?", o: ["0", "1", "2", "Heç biri"], c: 3 },
+            { q: "Bir sutka neçə saniyədir?", o: ["3600", "24000", "86400", "60000"], c: 2 },
+            { q: "Kvadratın neçə tərəfi var?", o: ["3", "4", "5", "6"], c: 1 }
+        ];
+
+        let currentUser = null;
+        let adminClicks = 0;
+        let gameTimer;
+
+        function show(id) {
+            document.querySelectorAll('.card').forEach(c => c.classList.add('hidden'));
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function toggleAuth(isLogin) {
+            document.getElementById('auth-reg').classList.toggle('hidden', isLogin);
+            document.getElementById('auth-login').classList.toggle('hidden', !isLogin);
+        }
+
+        function register() {
+            let name = document.getElementById('reg-name').value;
+            if(name.length < 3) return alert("Ad çox qısadır!");
+            let id = "BIT-" + Math.floor(1000 + Math.random() * 9000);
+            let newUser = { id: id, name: name, bits: 0, limit: 2, isVIP: false };
+            db.ref('users/' + id).set(newUser).then(() => { loginWithUser(newUser); });
+        }
+
+        function login() {
+            let id = document.getElementById('login-id').value.toUpperCase();
+            db.ref('users/' + id).once('value', (s) => {
+                if(s.exists()) loginWithUser(s.val());
+                else alert("ID tapılmadı!");
+            });
+        }
+
+        function loginWithUser(user) {
+            currentUser = user;
+            localStorage.setItem('bb_user_id', user.id);
+            updateDash();
+            show('scr-dash');
+            startLeaderboardSync();
+        }
+
+        function updateDash() {
+            if(!currentUser) return;
+            document.getElementById('u-id').innerText = currentUser.id;
+            document.getElementById('u-welcome').innerText = currentUser.name;
+            document.getElementById('u-bits').innerText = currentUser.bits;
+            document.getElementById('u-limit').innerText = currentUser.isVIP ? "∞" : currentUser.limit + "/2";
+            let container = document.getElementById('btn-container');
+            if (!currentUser.isVIP && currentUser.limit <= 0) {
+                container.innerHTML = `<button class="btn btn-wa" onclick="contactAdmin()">LİMİTSİZ AL</button>`;
+            } else {
+                container.innerHTML = `<button class="btn" onclick="startGame()">DÖYÜŞƏ BAŞLA</button>`;
+            }
+        }
+
+        function startLeaderboardSync() {
+            db.ref('users').orderByChild('bits').limitToLast(10).on('value', (snapshot) => {
+                let list = [];
+                snapshot.forEach(child => { list.push(child.val()); });
+                list.reverse();
+                let html = "";
+                list.forEach((u, i) => {
+                    html += `<div class="leader-item"><span>${i+1}. ${u.name}${u.isVIP ? '<span class="vip-tag">VIP</span>' : ''}</span><span style="color:var(--neon-blue)">${u.bits}</span></div>`;
+                });
+                document.getElementById('leader-list').innerHTML = html;
+            });
+        }
+
+        function startGame() {
+            if(!currentUser.isVIP) { currentUser.limit--; saveToDB(); }
+            show('scr-game'); loadQuestion();
+        }
+
+        function loadQuestion() {
+            clearInterval(gameTimer);
+            let time = 10;
+            document.getElementById('timer').innerText = time;
+            let q = questions[Math.floor(Math.random()*questions.length)];
+            document.getElementById('q-text').innerText = q.q;
+            let opts = document.getElementById('q-opts');
+            opts.innerHTML = "";
+            q.o.forEach((o, i) => {
+                let b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
+                b.onclick = () => {
+                    if(i === q.c) { currentUser.bits += 50; saveToDB(); loadQuestion(); }
+                    else { alert("YALNIŞ!"); show('scr-dash'); updateDash(); }
+                };
+                opts.appendChild(b);
+            });
+            gameTimer = setInterval(() => {
+                time--; document.getElementById('timer').innerText = time;
+                if(time <= 0) { clearInterval(gameTimer); show('scr-dash'); updateDash(); }
+            }, 1000);
+        }
+
+        function saveToDB() { if(currentUser) db.ref('users/' + currentUser.id).update(currentUser); }
+
+        function logout() { localStorage.removeItem('bb_user_id'); location.reload(); }
+
+        function contactAdmin() {
+            let msg = `Salam! ID: ${currentUser.id} üçün limitsiz oyun istəyirəm.`;
+            window.open(`https://wa.me/994773220807?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        function adminClick() { adminClicks++; if(adminClicks >= 5) { adminClicks = 0; show('scr-admin'); } }
+
+        // TƏHLÜKƏSİZ ADMİN YOXLAMASI (Bazadan yoxlayır)
+        function checkAdmin() {
+            let pass = document.getElementById('admin-pass').value;
+            db.ref('settings/adminPass').once('value', (s) => {
+                if(s.exists() && s.val() === pass) {
+                    document.getElementById('admin-tools').classList.remove('hidden');
+                } else alert("Təhlükəsizlik şifrəsi yanlışdır!");
+            });
+        }
+
+        function makeVIP() {
+            let tid = document.getElementById('target-id').value.toUpperCase();
+            db.ref('users/' + tid).update({ isVIP: true }).then(() => alert("VIP aktiv edildi!"));
+        }
+
+        window.onload = () => {
+            let savedId = localStorage.getItem('bb_user_id');
+            if(savedId) {
+                db.ref('users/' + savedId).once('value', (s) => {
+                    if(s.exists()) loginWithUser(s.val());
+                    else startLeaderboardSync();
+                });
+            } else startLeaderboardSync();
+        }
+    </script>
+</body>
+</html>
