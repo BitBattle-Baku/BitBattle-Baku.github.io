@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitBattle | Global Arena</title>
+    <title>BitBattle | Global Arena Pro</title>
     
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.17.1/firebase-database-compat.js"></script>
@@ -64,12 +64,12 @@
         }
 
         .leader-list { overflow-y: auto; flex-grow: 1; max-height: 180px; margin-bottom: 10px; }
-        .leader-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
+        .leader-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 0.8rem; }
         .vip-tag { color: var(--neon-green); font-weight: bold; font-size: 0.6rem; margin-left: 5px; border: 1px solid; padding: 1px 3px; border-radius: 3px; }
 
         .chat-container { border-top: 2px solid var(--neon-blue); padding-top: 10px; display: flex; flex-direction: column; height: 250px; }
         #chat-messages { flex-grow: 1; overflow-y: auto; font-size: 0.75rem; margin-bottom: 10px; padding-right: 5px; text-align: left; }
-        .chat-msg { margin-bottom: 5px; line-height: 1.2; word-wrap: break-word; }
+        .chat-msg { margin-bottom: 5px; line-height: 1.2; }
         .chat-user { font-weight: bold; color: var(--neon-blue); }
         .chat-input-area { display: flex; gap: 5px; }
         .chat-input-area input { margin-bottom: 0 !important; padding: 8px !important; font-size: 0.75rem !important; background: rgba(0,0,0,0.4) !important; border: 1px solid #333 !important; }
@@ -80,22 +80,33 @@
         .btn:hover { transform: scale(1.02); filter: brightness(1.2); }
         .pulse-btn { animation: pulse 2s infinite; }
         .btn-wa { background: #25D366 !important; box-shadow: 0 0 15px #25D366; }
+        .btn-duel { background: linear-gradient(45deg, #7b2ff7, #f107a3) !important; font-size: 0.7rem; }
+        
         input { width: 100%; padding: 12px; background: rgba(21, 28, 44, 0.6); border: 1px solid var(--neon-blue); color: white; border-radius: 8px; margin-bottom: 15px; text-align: center; outline: none; }
         .hidden { display: none !important; }
         .id-display { color: var(--neon-green); font-weight: bold; font-family: monospace; border: 1px dashed var(--neon-green); padding: 5px 15px; margin: 10px 0; display: inline-block; }
         .opt-btn { width: 100%; padding: 12px; margin-bottom: 8px; background: rgba(26, 36, 58, 0.7); border: 1px solid var(--neon-blue); color: white; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .opt-btn:hover { background: rgba(0, 242, 255, 0.2); }
         .rank-tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; margin-left: 5px; vertical-align: middle; }
+        
+        .add-friend { background: var(--neon-green); color: black; border: none; border-radius: 4px; padding: 2px 6px; cursor: pointer; font-weight: bold; font-size: 0.7rem; }
+
+        /* Yeni Dostluq Paneli Stili */
+        .friends-panel {
+            background: rgba(0,0,0,0.5); border-radius: 15px; padding: 10px; margin-top: 15px; text-align: left;
+        }
+        .friend-row {
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 5px; border-bottom: 1px solid #333; font-size: 0.8rem;
+        }
+        .status-dot { width: 8px; height: 8px; background: #555; border-radius: 50%; display: inline-block; margin-right: 5px; }
+        .status-online { background: var(--neon-green); box-shadow: 0 0 5px var(--neon-green); }
 
         .footer-trigger { 
             position: fixed; bottom: 10px; right: 10px; 
             font-size: 0.6rem; color: var(--neon-blue); 
             cursor: pointer; opacity: 0.15; z-index: 100;
         }
-
-        /* Düzgün/Səhv cavab animasiyası */
-        .correct-ans { background: #28a745 !important; border-color: white !important; }
-        .wrong-ans { background: #dc3545 !important; border-color: white !important; }
 
         @media (max-width: 850px) {
             body { flex-direction: column; overflow-y: auto; justify-content: flex-start; padding-top: 20px; }
@@ -110,11 +121,13 @@
         <h1>BIT BATTLE</h1>
         <div id="auth-reg">
             <input type="text" id="reg-name" placeholder="Döyüşçü Adı">
+            <input type="password" id="reg-pass" placeholder="Yeni Şifrə">
             <button class="btn" onclick="register()">Qeydiyyatdan Keç</button>
-            <p style="font-size: 0.8rem; margin-top: 10px;">ID var? <a href="#" onclick="toggleAuth(true)" style="color: var(--neon-blue);">Giriş</a></p>
+            <p style="font-size: 0.8rem; margin-top: 10px;">Hesabın var? <a href="#" onclick="toggleAuth(true)" style="color: var(--neon-blue);">Giriş</a></p>
         </div>
         <div id="auth-login" class="hidden">
-            <input type="text" id="login-id" placeholder="Məs: BIT-1234">
+            <input type="text" id="login-id" placeholder="BIT-ID (Məs: BIT-1234)">
+            <input type="password" id="login-pass" placeholder="Şifrəniz">
             <button class="btn" onclick="login()">Daxil Ol</button>
             <p style="font-size: 0.8rem; margin-top: 10px;"><a href="#" onclick="toggleAuth(false)" style="color: var(--neon-blue);">Qeydiyyat</a></p>
         </div>
@@ -133,13 +146,41 @@
             <span>BIT: <b id="u-bits" style="color:var(--neon-blue)">0</b></span>
             <span>Limit: <b id="u-limit" style="color:var(--neon-pink)">2/2</b></span>
         </div>
+        
         <div id="btn-container"></div>
+        
+        <button class="btn" style="background: #333; margin-top: 10px;" onclick="showFriendPanel()">DOSTLUQ VƏ DUEL ⚔️</button>
+        
+        <div id="friend-section" class="friends-panel hidden">
+            <div style="display: flex; gap: 5px; margin-bottom: 10px;">
+                <input type="text" id="friend-id-input" placeholder="Dostunun ID-sini yaz" style="margin:0; font-size: 0.7rem; padding: 5px;">
+                <button onclick="sendFriendRequest()" class="add-friend" style="padding: 0 10px;">Əlavə Et</button>
+            </div>
+            <h4 style="font-size: 0.7rem; color: var(--neon-pink);">AKTİV DOSTLAR</h4>
+            <div id="active-friends-list" style="max-height: 100px; overflow-y: auto;">
+                <p style="font-size: 0.6rem; color: #666;">Yüklənir...</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-top: 10px;">
+                <button class="btn btn-duel" onclick="startDuel('1v1')">1 V 1 DUEL</button>
+                <button class="btn btn-duel" style="background: linear-gradient(45deg, #ff9900, #ff4400) !important;" onclick="startDuel('2v2')">2 V 2 ARENA</button>
+            </div>
+        </div>
     </div>
 
     <div class="card hidden" id="scr-game">
         <div id="timer" style="font-size: 2.5rem; color: var(--neon-green); font-family: 'Orbitron';">10</div>
         <p id="q-text" style="margin: 25px 0; font-size: 1.1rem; min-height: 60px; font-weight: 500;"></p>
         <div id="q-opts"></div>
+    </div>
+
+    <div class="card hidden" id="scr-matchmaking">
+        <h2 style="font-family:'Orbitron'; color: var(--neon-pink);">ARENA EŞLƏŞMƏSİ</h2>
+        <div class="pulse-btn" style="width:100px; height:100px; border-radius:50%; border:5px solid var(--neon-blue); margin: 30px auto; display: flex; align-items: center; justify-content: center;">
+            <span id="match-timer">00:00</span>
+        </div>
+        <p id="match-status" style="font-size: 0.8rem;">Digər oyunçular axtarılır...</p>
+        <div id="match-players" style="margin-top: 20px; text-align: left; font-size: 0.7rem;"></div>
     </div>
 
     <div class="card hidden" id="scr-admin">
@@ -172,17 +213,17 @@
     <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
 
     <script>
-        // SƏSLƏR
         const sfx = {
             correct: new Audio('https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3'),
             wrong: new Audio('https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3')
         };
 
         function unlockAudio() {
-            Object.values(sfx).forEach(s => { s.play(); s.pause(); s.currentTime = 0; });
-            document.removeEventListener('mousedown', unlockAudio);
+            sfx.correct.play().then(() => { sfx.correct.pause(); sfx.correct.currentTime = 0; });
+            sfx.wrong.play().then(() => { sfx.wrong.pause(); sfx.wrong.currentTime = 0; });
+            document.removeEventListener('click', unlockAudio);
         }
-        document.addEventListener('mousedown', unlockAudio);
+        document.addEventListener('click', unlockAudio);
 
         const firebaseConfig = {
             apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
@@ -273,7 +314,17 @@
             { q: "İlk kompüter proqramçısı kim hesab olunur?", o: ["Marie Curie", "Ada Lovelace", "Grace Hopper", "Hedy Lamarr"], c: 1 },
             { q: "Dünyada ən çox dildə danışılan ölkə hansıdır?", o: ["Hindistan", "Çin", "Papua Yeni Qvineya", "Braziliya"], c: 2 },
             { q: "Vatikan dövlətinin rəsmi dili hansıdır?", o: ["İtalyan", "Latın", "Fransız", "İspan"], c: 1 },
-            { q: "Günəş sistemində öz oxu ətrafında ən sürətli fırlanan planet?", o: ["Yupiter", "Mars", "Yer", "Merkuri"], c: 0 }
+            { q: "Günəş sistemində öz oxu ətrafında ən sürətli fırlanan planet?", o: ["Yupiter", "Mars", "Yer", "Merkuri"], c: 0 },
+            { q: "f(x) = x² + 2x + 1 törəməsi f'(2) neçədir?", o: ["4", "5", "6", "8"], c: 2 },
+            { q: "log₂(x-3) = 4 olarsa, x neçədir?", o: ["11", "13", "16", "19"], c: 3 },
+            { q: "İki rəqəmli ədədin rəqəmləri cəmi 9-dur. Bu ədəddən 9 çıxdıqda rəqəmlər yerini dəyişir. Ədəd neçədir?", o: ["45", "54", "63", "72"], c: 1 },
+            { q: "Bir kubun bütün səthlərini boyamaq üçün 54 sm² boya lazımdırsa, kubun tərəfi neçədir?", o: ["2", "3", "4", "6"], c: 1 },
+            { q: "Determinantı 0 olan matris necə adlanır?", o: ["Vahid", "Cırlaşmış", "Tərs", "Diaqonal"], c: 1 },
+            { q: "9, 16, 25, 36, ? Ardıcıllığı tamamlayın.", o: ["45", "49", "54", "64"], c: 1 },
+            { q: "İki zər atılır. Üst üzə düşən xalların cəminin 10 olması ehtimalı?", o: ["1/12", "3/36", "1/6", "5/36"], c: 1 },
+            { q: "9-cu dərəcədən kök altında 512 neçədir?", o: ["2", "3", "4", "8"], c: 0 },
+            { q: "Sinus 90 dərəcədə neçəyə bərabərdir?", o: ["0", "0.5", "1", "-1"], c: 2 },
+            { q: "Hansı proqramlaşdırma dili 'Low-level' hesab olunur?", o: ["Python", "Java", "Assembly", "PHP"], c: 2 }
         ];
 
         let currentUser = null;
@@ -286,16 +337,150 @@
             return { name: "Pilot", color: "#00f2ff" };
         }
 
+        function toggleAuth(isLogin) {
+            document.getElementById('auth-reg').classList.toggle('hidden', isLogin);
+            document.getElementById('auth-login').classList.toggle('hidden', !isLogin);
+        }
+
+        function register() {
+            let name = document.getElementById('reg-name').value;
+            let pass = document.getElementById('reg-pass').value;
+            if(name.length < 3 || pass.length < 4) return alert("Ad və ya Şifrə çox qısadır!");
+            
+            let id = "BIT-" + Math.floor(1000 + Math.random() * 9000);
+            let newUser = { id, name, pass, bits: 0, limit: 2, isVIP: false, lastLogin: Date.now(), friends: [], status: "online" };
+            
+            db.ref('users/' + id).set(newUser).then(() => {
+                alert("Qeydiyyat uğurlu! ID-niz: " + id);
+                loginWithUser(newUser);
+            });
+        }
+
+        function login() {
+            let id = document.getElementById('login-id').value.toUpperCase();
+            let pass = document.getElementById('login-pass').value;
+            
+            db.ref('users/' + id).once('value', s => {
+                if(s.exists()){
+                    let u = s.val();
+                    if(u.pass === pass) loginWithUser(u);
+                    else alert("Şifrə səhvdir!");
+                } else alert("ID tapılmadı!");
+            });
+        }
+
+        function loginWithUser(user) {
+            currentUser = user;
+            localStorage.setItem('bb_user_id', user.id);
+            db.ref('users/' + user.id).update({ status: "online" });
+            
+            checkBonusAvailability();
+            updateDash();
+            show('scr-dash');
+            startLeaderboardSync();
+            listenChat();
+            syncFriends();
+        }
+
+        /* --- Dostluq Funksiyaları --- */
+        function showFriendPanel() {
+            document.getElementById('friend-section').classList.toggle('hidden');
+        }
+
+        function sendFriendRequest() {
+            const fid = document.getElementById('friend-id-input').value.toUpperCase();
+            if(!fid || fid === currentUser.id) return alert("Keçərsiz ID!");
+            
+            db.ref('users/' + fid).once('value', s => {
+                if(s.exists()) {
+                    if(!currentUser.friends) currentUser.friends = [];
+                    if(currentUser.friends.includes(fid)) return alert("Bu şəxs artıq dost siyahısındadır!");
+                    
+                    currentUser.friends.push(fid);
+                    saveToDB();
+                    alert(fid + " dost olaraq əlavə edildi!");
+                    syncFriends();
+                } else alert("Belə bir ID tapılmadı!");
+            });
+        }
+
+        function syncFriends() {
+            if(!currentUser.friends || currentUser.friends.length === 0) {
+                document.getElementById('active-friends-list').innerHTML = "<p style='font-size:0.6rem;'>Hələ dostun yoxdur.</p>";
+                return;
+            }
+
+            db.ref('users').on('value', snap => {
+                let html = "";
+                let users = snap.val();
+                currentUser.friends.forEach(fid => {
+                    let u = users[fid];
+                    if(u) {
+                        let isOnline = u.status === "online";
+                        html += `
+                        <div class="friend-row">
+                            <span><span class="status-dot ${isOnline ? 'status-online' : ''}"></span> ${u.name} (${u.id})</span>
+                            <button onclick="challengeFriend('${u.id}')" style="background:none; border:1px solid var(--neon-blue); color:white; font-size:0.5rem; cursor:pointer;">DƏVƏT</button>
+                        </div>`;
+                    }
+                });
+                document.getElementById('active-friends-list').innerHTML = html;
+            });
+        }
+
+        function startDuel(mode) {
+            show('scr-matchmaking');
+            let timer = 0;
+            let mTimer = setInterval(() => {
+                timer++;
+                let min = String(Math.floor(timer/60)).padStart(2, '0');
+                let sec = String(timer%60).padStart(2, '0');
+                document.getElementById('match-timer').innerText = `${min}:${sec}`;
+                
+                if(timer === 3) {
+                    document.getElementById('match-players').innerHTML = `
+                        <div>SƏN: ${currentUser.name}</div>
+                        <div>RƏQİB 1: Döyüşçü_${Math.floor(Math.random()*100)}</div>
+                        ${mode === '2v2' ? '<div>TƏRƏFDAŞIN: Random_Pro</div><div>RƏQİB 2: Master_Bit</div>' : ''}
+                    `;
+                    document.getElementById('match-status').innerText = "RƏQİBLƏR TAPILDI! DÖYÜŞ BAŞLAYIR...";
+                }
+
+                if(timer === 6) {
+                    clearInterval(mTimer);
+                    startGame();
+                }
+            }, 1000);
+        }
+
+        function challengeFriend(fid) {
+            alert(fid + " ID-li dosta duel dəvəti göndərildi! Gözlənilir...");
+        }
+
+        /* --- Klassik Funksiyalar --- */
+        function startLeaderboardSync() {
+            db.ref('users').orderByChild('bits').limitToLast(10).on('value', (snapshot) => {
+                let list = []; snapshot.forEach(child => { list.push(child.val()); });
+                list.reverse();
+                let html = "";
+                list.forEach((u, i) => {
+                    const rank = getRank(u.bits);
+                    html += `<div class="leader-item">
+                        <span>${i+1}. ${u.name} <small style="color:${rank.color}">[${rank.name}]</small>${u.isVIP ? '<span class="vip-tag">VIP</span>' : ''}</span>
+                        <div>
+                            <span style="color:var(--neon-blue); margin-right:10px;">${u.bits}</span>
+                        </div>
+                    </div>`;
+                });
+                document.getElementById('leader-list').innerHTML = html;
+            });
+        }
+
         function sendMsg() {
             const inp = document.getElementById('chat-input');
             const txt = inp.value.trim();
             if(txt && currentUser) {
-                db.ref('chat').push({ 
-                    u: currentUser.name, 
-                    t: txt, 
-                    v: currentUser.isVIP, 
-                    ts: firebase.database.ServerValue.TIMESTAMP 
-                });
+                db.ref('chat').push({ u: currentUser.name, t: txt, v: currentUser.isVIP, ts: firebase.database.ServerValue.TIMESTAMP });
                 inp.value = "";
             }
         }
@@ -320,48 +505,22 @@
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function toggleAuth(isLogin) {
-            document.getElementById('auth-reg').classList.toggle('hidden', isLogin);
-            document.getElementById('auth-login').classList.toggle('hidden', !isLogin);
-        }
-
-        function register() {
-            let name = document.getElementById('reg-name').value;
-            if(name.length < 3) return alert("Ad qısadır!");
-            let id = "BIT-" + Math.floor(1000 + Math.random() * 9000);
-            let newUser = { id, name, bits: 0, limit: 2, isVIP: false, lastLogin: Date.now() };
-            db.ref('users/' + id).set(newUser).then(() => loginWithUser(newUser));
-        }
-
-        function login() {
-            let id = document.getElementById('login-id').value.toUpperCase();
-            db.ref('users/' + id).once('value', s => s.exists() ? loginWithUser(s.val()) : alert("Tapılmadı!"));
-        }
-
-        function loginWithUser(user) {
-            currentUser = user;
-            localStorage.setItem('bb_user_id', user.id);
-            checkBonusAvailability();
-            updateDash();
-            show('scr-dash');
-            startLeaderboardSync();
-            listenChat();
-        }
-
         function checkBonusAvailability() {
             const today = new Date().toDateString();
             const lastDate = currentUser.lastBonusDate || "";
             const giftBtn = document.getElementById('gift-trigger');
-            giftBtn.style.display = (today === lastDate) ? "none" : "inline-flex";
+            if(today === lastDate) { giftBtn.style.display = "none"; } 
+            else { giftBtn.style.display = "inline-flex"; }
         }
 
         function claimDailyBonus() {
+            const today = new Date().toDateString();
             currentUser.limit += 2;
-            currentUser.lastBonusDate = new Date().toDateString();
+            currentUser.lastBonusDate = today;
             saveToDB();
             updateDash();
             checkBonusAvailability();
-            sfx.correct.play().catch(() => {});
+            sfx.correct.play().catch(e => {});
             alert("Təbriklər! Gündəlik +2 Limit Hədiyyə Edildi 🎁");
         }
 
@@ -381,86 +540,52 @@
             let container = document.getElementById('btn-container');
             container.innerHTML = (!currentUser.isVIP && currentUser.limit <= 0) ? 
                 `<button class="btn btn-wa pulse-btn" onclick="contactAdmin()">LİMİTSİZ AL</button>` : 
-                `<button class="btn pulse-btn" onclick="startGame()">DÖYÜŞƏ BAŞLA</button>`;
-        }
-
-        function startLeaderboardSync() {
-            db.ref('users').orderByChild('bits').limitToLast(10).on('value', (snapshot) => {
-                let list = []; snapshot.forEach(child => { list.push(child.val()); });
-                list.reverse();
-                let html = "";
-                list.forEach((u, i) => {
-                    const rank = getRank(u.bits);
-                    html += `<div class="leader-item"><span>${i+1}. ${u.name} <small style="color:${rank.color}">[${rank.name}]</small>${u.isVIP ? '<span class="vip-tag">VIP</span>' : ''}</span><span style="color:var(--neon-blue)">${u.bits}</span></div>`;
-                });
-                document.getElementById('leader-list').innerHTML = html;
-            });
+                `<button class="btn pulse-btn" onclick="startGame()">TƏK NƏFƏRLİK MƏŞQ</button>`;
         }
 
         function startGame() {
             if(!currentUser.isVIP) { currentUser.limit--; saveToDB(); }
-            show('scr-game'); 
-            loadQuestion();
+            show('scr-game'); loadQuestion();
         }
 
         function loadQuestion() {
             clearInterval(gameTimer);
             let time = 10;
-            const timerEl = document.getElementById('timer');
-            timerEl.innerText = time;
-            timerEl.style.color = "var(--neon-green)";
-            
+            document.getElementById('timer').innerText = time;
+            document.getElementById('timer').style.color = "var(--neon-green)";
             let q = questions[Math.floor(Math.random()*questions.length)];
             document.getElementById('q-text').innerText = q.q;
             let opts = document.getElementById('q-opts');
             opts.innerHTML = "";
-            
             q.o.forEach((o, i) => {
-                let b = document.createElement('button'); 
-                b.className = "opt-btn"; 
-                b.innerText = o;
+                let b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
                 b.onclick = () => {
                     if(i === q.c) { 
-                        b.classList.add('correct-ans');
-                        sfx.correct.play().catch(() => {});
-                        currentUser.bits += 50; 
-                        saveToDB(); 
-                        setTimeout(loadQuestion, 500); 
+                        sfx.correct.play().catch(e => {});
+                        currentUser.bits += 50; saveToDB(); loadQuestion(); 
                     } else { 
-                        b.classList.add('wrong-ans');
-                        sfx.wrong.play().catch(() => {});
-                        setTimeout(() => { alert("YALNIŞ!"); show('scr-dash'); updateDash(); }, 300);
+                        sfx.wrong.play().catch(e => {});
+                        alert("YALNIŞ!"); show('scr-dash'); updateDash(); 
                     }
                 };
                 opts.appendChild(b);
             });
-
             gameTimer = setInterval(() => {
-                time--; 
-                timerEl.innerText = time;
-                if(time <= 3) timerEl.style.color = "red";
-                if(time <= 0) { 
-                    clearInterval(gameTimer); 
-                    sfx.wrong.play().catch(() => {});
-                    alert("ZAMAN BİTDİ!");
-                    show('scr-dash'); 
-                    updateDash(); 
-                }
+                time--; document.getElementById('timer').innerText = time;
+                if(time <= 3) document.getElementById('timer').style.color = "red";
+                if(time <= 0) { sfx.wrong.play().catch(e => {}); clearInterval(gameTimer); show('scr-dash'); updateDash(); }
             }, 1000);
         }
 
         function saveToDB() { if(currentUser) db.ref('users/' + currentUser.id).update(currentUser); }
-        function logout() { localStorage.removeItem('bb_user_id'); location.reload(); }
+        function logout() { 
+            if(currentUser) db.ref('users/' + currentUser.id).update({ status: "offline" });
+            localStorage.removeItem('bb_user_id'); 
+            location.reload(); 
+        }
         function contactAdmin() { window.open(`https://wa.me/994773220807?text=ID: ${currentUser.id} limit istəyirəm`, '_blank'); }
         
-        function adminClick() { 
-            adminClicks++; 
-            if(adminClicks >= 5) { 
-                adminClicks = 0; 
-                show('scr-admin'); 
-                db.ref('users').once('value', s => { document.getElementById('admin-count').innerText = "Cəmi: " + s.numChildren(); }); 
-            } 
-        }
+        function adminClick() { adminClicks++; if(adminClicks >= 5) { adminClicks = 0; show('scr-admin'); db.ref('users').once('value', s => { document.getElementById('admin-count').innerText = "Cəmi: " + s.numChildren(); }); } }
 
         function checkAdmin() {
             let pass = document.getElementById('admin-pass').value;
@@ -480,6 +605,9 @@
             if(savedId) db.ref('users/' + savedId).once('value', s => s.exists() ? loginWithUser(s.val()) : startLeaderboardSync());
             else startLeaderboardSync();
         }
+
+        // Browser bağlananda offline et
+        window.onbeforeunload = () => { if(currentUser) db.ref('users/' + currentUser.id).update({ status: "offline" }); };
 
         document.getElementById('chat-input')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') sendMsg(); });
     </script>
