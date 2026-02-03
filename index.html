@@ -69,7 +69,7 @@
 
         .chat-container { border-top: 2px solid var(--neon-blue); padding-top: 10px; display: flex; flex-direction: column; height: 250px; }
         #chat-messages { flex-grow: 1; overflow-y: auto; font-size: 0.75rem; margin-bottom: 10px; padding-right: 5px; text-align: left; }
-        .chat-msg { margin-bottom: 5px; line-height: 1.2; }
+        .chat-msg { margin-bottom: 5px; line-height: 1.2; word-wrap: break-word; }
         .chat-user { font-weight: bold; color: var(--neon-blue); }
         .chat-input-area { display: flex; gap: 5px; }
         .chat-input-area input { margin-bottom: 0 !important; padding: 8px !important; font-size: 0.75rem !important; background: rgba(0,0,0,0.4) !important; border: 1px solid #333 !important; }
@@ -92,6 +92,10 @@
             font-size: 0.6rem; color: var(--neon-blue); 
             cursor: pointer; opacity: 0.15; z-index: 100;
         }
+
+        /* Düzgün/Səhv cavab animasiyası */
+        .correct-ans { background: #28a745 !important; border-color: white !important; }
+        .wrong-ans { background: #dc3545 !important; border-color: white !important; }
 
         @media (max-width: 850px) {
             body { flex-direction: column; overflow-y: auto; justify-content: flex-start; padding-top: 20px; }
@@ -168,19 +172,17 @@
     <div class="footer-trigger" onclick="adminClick()">ismayilovismayil</div>
 
     <script>
-        // SƏSLƏR - YENİLƏNDİ
+        // SƏSLƏR
         const sfx = {
             correct: new Audio('https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3'),
             wrong: new Audio('https://s3.amazonaws.com/freecodecamp/drums/Dsc_Oh.mp3')
         };
 
-        // Brauzer blokunu aşmaq üçün səs aktivləşdirmə
         function unlockAudio() {
-            sfx.correct.play().then(() => { sfx.correct.pause(); sfx.correct.currentTime = 0; });
-            sfx.wrong.play().then(() => { sfx.wrong.pause(); sfx.wrong.currentTime = 0; });
-            document.removeEventListener('click', unlockAudio);
+            Object.values(sfx).forEach(s => { s.play(); s.pause(); s.currentTime = 0; });
+            document.removeEventListener('mousedown', unlockAudio);
         }
-        document.addEventListener('click', unlockAudio);
+        document.addEventListener('mousedown', unlockAudio);
 
         const firebaseConfig = {
             apiKey: "AIzaSyBDez5-5JBRKWruTeRQ5GmMCX9we0iP00",
@@ -288,7 +290,12 @@
             const inp = document.getElementById('chat-input');
             const txt = inp.value.trim();
             if(txt && currentUser) {
-                db.ref('chat').push({ u: currentUser.name, t: txt, v: currentUser.isVIP, ts: firebase.database.ServerValue.TIMESTAMP });
+                db.ref('chat').push({ 
+                    u: currentUser.name, 
+                    t: txt, 
+                    v: currentUser.isVIP, 
+                    ts: firebase.database.ServerValue.TIMESTAMP 
+                });
                 inp.value = "";
             }
         }
@@ -345,18 +352,16 @@
             const today = new Date().toDateString();
             const lastDate = currentUser.lastBonusDate || "";
             const giftBtn = document.getElementById('gift-trigger');
-            if(today === lastDate) { giftBtn.style.display = "none"; } 
-            else { giftBtn.style.display = "inline-flex"; }
+            giftBtn.style.display = (today === lastDate) ? "none" : "inline-flex";
         }
 
         function claimDailyBonus() {
-            const today = new Date().toDateString();
             currentUser.limit += 2;
-            currentUser.lastBonusDate = today;
+            currentUser.lastBonusDate = new Date().toDateString();
             saveToDB();
             updateDash();
             checkBonusAvailability();
-            sfx.correct.play().catch(e => console.log("Audio play failed"));
+            sfx.correct.play().catch(() => {});
             alert("Təbriklər! Gündəlik +2 Limit Hədiyyə Edildi 🎁");
         }
 
@@ -394,35 +399,53 @@
 
         function startGame() {
             if(!currentUser.isVIP) { currentUser.limit--; saveToDB(); }
-            show('scr-game'); loadQuestion();
+            show('scr-game'); 
+            loadQuestion();
         }
 
         function loadQuestion() {
             clearInterval(gameTimer);
             let time = 10;
-            document.getElementById('timer').innerText = time;
-            document.getElementById('timer').style.color = "var(--neon-green)";
+            const timerEl = document.getElementById('timer');
+            timerEl.innerText = time;
+            timerEl.style.color = "var(--neon-green)";
+            
             let q = questions[Math.floor(Math.random()*questions.length)];
             document.getElementById('q-text').innerText = q.q;
             let opts = document.getElementById('q-opts');
             opts.innerHTML = "";
+            
             q.o.forEach((o, i) => {
-                let b = document.createElement('button'); b.className = "opt-btn"; b.innerText = o;
+                let b = document.createElement('button'); 
+                b.className = "opt-btn"; 
+                b.innerText = o;
                 b.onclick = () => {
                     if(i === q.c) { 
-                        sfx.correct.play().catch(e => {});
-                        currentUser.bits += 50; saveToDB(); loadQuestion(); 
+                        b.classList.add('correct-ans');
+                        sfx.correct.play().catch(() => {});
+                        currentUser.bits += 50; 
+                        saveToDB(); 
+                        setTimeout(loadQuestion, 500); 
                     } else { 
-                        sfx.wrong.play().catch(e => {});
-                        alert("YALNIŞ!"); show('scr-dash'); updateDash(); 
+                        b.classList.add('wrong-ans');
+                        sfx.wrong.play().catch(() => {});
+                        setTimeout(() => { alert("YALNIŞ!"); show('scr-dash'); updateDash(); }, 300);
                     }
                 };
                 opts.appendChild(b);
             });
+
             gameTimer = setInterval(() => {
-                time--; document.getElementById('timer').innerText = time;
-                if(time <= 3) document.getElementById('timer').style.color = "red";
-                if(time <= 0) { sfx.wrong.play().catch(e => {}); clearInterval(gameTimer); show('scr-dash'); updateDash(); }
+                time--; 
+                timerEl.innerText = time;
+                if(time <= 3) timerEl.style.color = "red";
+                if(time <= 0) { 
+                    clearInterval(gameTimer); 
+                    sfx.wrong.play().catch(() => {});
+                    alert("ZAMAN BİTDİ!");
+                    show('scr-dash'); 
+                    updateDash(); 
+                }
             }, 1000);
         }
 
@@ -430,7 +453,14 @@
         function logout() { localStorage.removeItem('bb_user_id'); location.reload(); }
         function contactAdmin() { window.open(`https://wa.me/994773220807?text=ID: ${currentUser.id} limit istəyirəm`, '_blank'); }
         
-        function adminClick() { adminClicks++; if(adminClicks >= 5) { adminClicks = 0; show('scr-admin'); db.ref('users').once('value', s => { document.getElementById('admin-count').innerText = "Cəmi: " + s.numChildren(); }); } }
+        function adminClick() { 
+            adminClicks++; 
+            if(adminClicks >= 5) { 
+                adminClicks = 0; 
+                show('scr-admin'); 
+                db.ref('users').once('value', s => { document.getElementById('admin-count').innerText = "Cəmi: " + s.numChildren(); }); 
+            } 
+        }
 
         function checkAdmin() {
             let pass = document.getElementById('admin-pass').value;
